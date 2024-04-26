@@ -1,1 +1,13 @@
-/* You can add global styles to this file, and also import other style files */
+* {
+    font-family: 'Nunito';
+}
+
+body {
+    background-color: #0d1117;
+}
+
+div {
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box; /* Firefox, other Gecko */
+    box-sizing: border-box; /* Opera/IE 8+ */
+}

@@ -1,0 +1,25 @@
+<!--
+    This is the Health Check page. Things to check:
+    1. Database Status
+    2. Required Files and Directories
+    3. License Existence
+    4. Internet Speed
+-->
+
+<div id="health-check" class="page centered">
+    <div class="page__step-wrapper">
+        <div class="page__title-and-loader">
+            <h2 class="page__step-wrapper-title flex-1">{{ title }}</h2>
+            <div class="page__loader">
+                <app-animated-loader></app-animated-loader>
+            </div>
+        </div>
+
+        <div class="page__step-wrapper-progress-bar">
+            <app-progress-bar [progressWidth]="progressWidth"></app-progress-bar>
+        </div>
+        <p class="page__step-wrapper-subtitle">
+            {{ subtitle }}
+        </p>
+    </div>
+</div>

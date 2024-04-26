@@ -1,0 +1,24 @@
+.progress-bar {
+    background-color: #f0f0f0;
+    border-radius: 999px;
+    height: 8px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+
+    &__progess-indicator {
+        background-color: #88d711;
+        height: 100%;
+        left: 0;
+        position: absolute;
+        transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        top: 0;
+    }
+
+    &__info {
+        color: #fff;
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 20px;
+    }
+}

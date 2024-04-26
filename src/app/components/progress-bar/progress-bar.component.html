@@ -1,0 +1,12 @@
+<div class="progress-bar-wrapper">
+    <div id="progress-bar" class="component progress-bar">
+        <div class="progress-bar__progess-indicator" [ngStyle]="{ 'width.%': progressWidth }"></div>
+    </div>
+
+    <div class="flex progress-bar__info" *ngIf="progressBarInfo">
+        <span class="flex-1 mt-1">
+            {{ progressBarInfo }}
+        </span>
+        <span class="mt-1">{{ progressWidth }} %</span>
+    </div>
+</div>

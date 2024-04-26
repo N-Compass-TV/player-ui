@@ -1,0 +1,45 @@
+<div id="content-setup" class="page centered">
+    <div class="page__step-wrapper">
+        <div class="page__title-progress-subtitle-wrapper">
+            <div class="page__title-and-loader">
+                <h2 class="page__step-wrapper-title flex-1">{{ title }}</h2>
+                <app-animated-loader></app-animated-loader>
+            </div>
+            <div class="page__step-wrapper-progress-bar">
+                <app-progress-bar [progressWidth]="progressWidth"></app-progress-bar>
+            </div>
+
+            <div class="flex">
+                <p class="page__step-wrapper-subtitle flex-1">
+                    {{ subtitle }}
+                </p>
+
+                <p class="page__step-wrapper-subtitle" *ngIf="readyToDownload">
+                    Downloaded {{ downloadedPlayerAssets.length }} of {{ playerAssets.length }}
+                </p>
+            </div>
+        </div>
+
+        <div class="page__progress-area" [ngClass]="readyToDownload ? 'page__progress-area-show' : ''">
+            <ng-container *ngFor="let asset of playerAssets; let i = index">
+                <div
+                    class="page__downloadable-items"
+                    [ngClass]="
+                        downloadedPlayerAssets.includes(asset.contentId) ? 'page__downloadable-items--hidden' : ''
+                    ">
+                    <app-progress-bar
+                        [progressReference]="asset.contentId"
+                        [progressWidthWatch]="assetDownloadProgress"
+                        [progressBarInfo]="asset.fileName || asset.title">
+                    </app-progress-bar>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="downloadCompleted">
+                <div class="page__progress-area-success-download">
+                    <h2>Assets downloaded successfully!</h2>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>
