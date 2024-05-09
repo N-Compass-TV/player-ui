@@ -5,7 +5,7 @@ import { AnimatedLoaderComponent, ProgressBarComponent } from '@components';
 import { HEALTH_CHECK_STEPS } from '@constants';
 import { RequestService } from '@services';
 import { API_ENDPOINTS } from '@environments';
-import { ProgressStep } from '../../interfaces/ProgressStep';
+import { ProgressStep } from '../../interfaces/misc/ProgressStep';
 
 @Component({
     selector: 'app-health-check',

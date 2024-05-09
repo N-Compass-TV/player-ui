@@ -1,1 +1,7 @@
-<div id="play" class="page play-page"></div>
+<div id="play" class="page play-page">
+    <ng-container *ngFor="let zone of screenZones">
+        <app-zone [zoneData]="zone">
+            <app-playlist [playlistId]="zone.playlist_id"></app-playlist>
+        </app-zone>
+    </ng-container>
+</div>

@@ -6,8 +6,7 @@ import { API_ENDPOINTS } from '@environments';
 import { CONTENT_DOWNLOAD_STEPS } from '@constants';
 import { AnimatedLoaderComponent, ProgressBarComponent } from '@components';
 import { AssetDownloadProgress, Content, PlayerData, ProgressStep } from '@interfaces';
-import { RequestService } from '@services';
-import { SocketService } from '../../services/socket/socket.service';
+import { RequestService, SocketService } from '@services';
 
 @Component({
     selector: 'app-content-setup',

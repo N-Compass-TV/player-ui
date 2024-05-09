@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
     selector: 'app-playlist',
@@ -7,4 +7,6 @@ import { Component } from '@angular/core';
     templateUrl: './playlist.component.html',
     styleUrl: './playlist.component.scss',
 })
-export class PlaylistComponent {}
+export class PlaylistComponent {
+    @Input() playlistId: string = '';
+}
