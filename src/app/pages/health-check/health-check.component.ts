@@ -16,34 +16,66 @@ import { ProgressStep } from '../../interfaces/misc/ProgressStep';
     styleUrl: './health-check.component.scss',
 })
 export class HealthCheckComponent implements OnInit {
-    /** Public */
+    /**
+     * The current progress value.
+     * @default 0
+     */
     currentProgress = 0;
+
+    /**
+     * The width of the progress indicator.
+     * @default 0
+     */
     progressWidth = 0;
+
+    /**
+     * The total width of the progress indicator.
+     * @default 50
+     */
     progressWidthTotal = 50;
+
+    /**
+     * The number of steps in the process.
+     * @default 6
+     */
     stepCount = 6;
+
+    /**
+     * The subtitle displayed during the process.
+     * @default 'Please Wait . . .'
+     */
     subtitle = 'Please Wait . . .';
+
+    /**
+     * The title displayed during the process.
+     * @default 'Player Startup Check'
+     */
     title = 'Player Startup Check';
 
-    /** Private */
-    private steps = HEALTH_CHECK_STEPS;
+    /**
+     * The progress steps description for display
+     */
+    private steps: ProgressStep[] = HEALTH_CHECK_STEPS;
 
     constructor(
         private _request: RequestService,
         private _router: Router,
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.checkPlayerHealth();
     }
 
     /**
-     * Entry point of the player, this method triggers a chain of
-     * API calls to the player-server to check the following:
+     * This method updates the subtitle message at each step and finally redirects to the asset downloader page.
+     * Entry point of the player, this method triggers a chain of API calls to the player-server to check the following:
      * 1. Database health
      * 2. Required files and folders
      * 3. Internet Speed
-     * 4. Check Player Server and UI Updates
+     * 4. Player Server and UI Updates
      * 5. License existence
+     * @private
+     * @returns {void}
      */
     private checkPlayerHealth(): void {
         this._request
@@ -104,6 +136,13 @@ export class HealthCheckComponent implements OnInit {
             });
     }
 
+    /**
+     * Retrieves the subtitle message based on the current step. Optionally increases the progress width.
+     * @private
+     * @param {number} step - The current step in the process.
+     * @param {boolean} [increaseProgress=true] - Whether to increase the progress width.
+     * @returns {ProgressStep} The title and subtitle for the given step.
+     */
     private getSubtitleMessage(step: number, increaseProgress = true): ProgressStep {
         if (increaseProgress) {
             this.currentProgress++;

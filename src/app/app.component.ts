@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import socket from 'socket.io-client';
+import io from 'socket.io-client';
 import { environment } from '@environments';
 import { PLAYER_SERVER_SOCKET_EVENTS } from '@constants';
 import { SocketService } from '@services';
@@ -14,28 +14,62 @@ import { AssetDownloadProgress } from '@interfaces';
     styleUrl: './app.component.scss',
 })
 export class AppComponent {
-    private url = environment.api; // URL where your server is running
-    private socketClient: any;
+    /**
+     * URL where your server is running.
+     * @type {string}
+     * @private
+     */
+    private url = environment.api;
 
+    /**
+     * Client for the socket connection.
+     * @type {any}
+     * @private
+     */
+    private socketClient!: SocketIOClient.Socket;
+
+    /**
+     * Constructor for the class.
+     *
+     * @param {SocketService} _socket - The socket service to handle socket events.
+     */
     constructor(private _socket: SocketService) {
         this.connectToSocket();
     }
 
-    ngOnInit() {
+    /**
+     * Lifecycle hook that is called after data-bound properties are initialized.
+     * Sets up socket listeners.
+     */
+    ngOnInit(): void {
         this.setupSocketListeners();
     }
 
-    ngOnDestroy() {
+    /**
+     * Lifecycle hook that is called when the component is destroyed.
+     * Disconnects the socket client.
+     */
+    ngOnDestroy(): void {
         this.socketClient.disconnect();
     }
 
-    private connectToSocket() {
-        this.socketClient = socket(this.url);
+    /**
+     * Connects to the socket server.
+     * @private
+     * @returns {void}
+     */
+    private connectToSocket(): void {
+        this.socketClient = io(this.url);
     }
 
-    private setupSocketListeners() {
+    /**
+     * Sets up listeners for socket events.
+     * @private
+     * @returns {void}
+     */
+    private setupSocketListeners(): void {
         this.socketClient.on('connect', () => {
-            console.log('Connected to Socket.IO server');
+            console.log('Connected to local socket server, Player server is up and running!');
         });
 
         this.socketClient.on(PLAYER_SERVER_SOCKET_EVENTS.fileDownloaded, (data: AssetDownloadProgress) => {
@@ -43,7 +77,7 @@ export class AppComponent {
         });
 
         this.socketClient.on('disconnect', () => {
-            console.log('Disconnected from Socket.IO server');
+            console.log('Disconnected to local socket server, Player server is down!');
         });
     }
 }

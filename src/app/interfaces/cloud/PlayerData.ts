@@ -4,7 +4,7 @@
  * alignment with the .NET API data hosted on AWS.
  */
 
-// Main player data interface
+/** Main player data interface */
 export interface PlayerData {
     fastEdgeMonitoringTool: number;
     globalSettings: GlobalSetting[];
@@ -14,7 +14,7 @@ export interface PlayerData {
     tvBrand: string;
 }
 
-// Detailed contents within the player data
+/**  Detailed contents within the player data */
 export interface PiContents {
     contents: Content[];
     createdBy: string | null;
@@ -32,7 +32,7 @@ export interface PiContents {
     timezone: Timezone;
 }
 
-// Defines the zone properties of a template
+/** Defines the zone properties of a template */
 export class ScreenTemplateZone {
     background!: string;
     description!: string | null;
@@ -51,7 +51,7 @@ export class ScreenTemplateZone {
     yPos!: string;
 }
 
-// Defines the screen information
+/** Defines the screen information */
 export interface Screen {
     createdBy: string;
     dateCreated: string;
@@ -68,7 +68,7 @@ export interface Screen {
     templateName: string | null;
 }
 
-// Screen type details
+/** Screen type details */
 export interface ScreenType {
     dateCreated: string;
     dateUpdated: string;
@@ -77,7 +77,7 @@ export interface ScreenType {
     screenTypeId: string;
 }
 
-// Content information, extending PiContent from earlier definition
+/** Content information, extending PiContent from earlier definition */
 export interface Content {
     advertiserId: string;
     classification: string | null;
@@ -123,7 +123,7 @@ export interface Content {
     uuid: string | null;
 }
 
-// Playlist content schedule details
+/** Playlist content schedule details */
 export interface PlaylistContentSchedule {
     alternateWeek: number;
     dateCreated: string;
@@ -139,7 +139,7 @@ export interface PlaylistContentSchedule {
     type: number;
 }
 
-// Dealer information
+/** Dealer information */
 export interface Dealer {
     address: string | null;
     businessName: string;
@@ -163,7 +163,7 @@ export interface Dealer {
     zip: string | null;
 }
 
-// Host information
+/** Host information */
 export interface Host {
     address: string | null;
     businessName: string | null;
@@ -192,21 +192,21 @@ export interface Host {
     vistarVenueId: string | null;
 }
 
-// Timezone details
+/** Timezone details */
 export interface Timezone {
     id: string;
     name: string;
     status: string;
 }
 
-// Global settings configuration
+/** Global settings configuration */
 export interface GlobalSetting {
     id: number;
     vistarApiKey: string;
     vistarNetworkId: string;
 }
 
-// Reboot times
+/**  Reboot times */
 export interface RebootTime {
     rebootTime: string;
 }

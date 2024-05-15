@@ -3,7 +3,7 @@ import { PlaylistComponent, ZoneComponent } from '@components';
 import { RequestService } from '@services';
 import { API_ENDPOINTS } from '@environments';
 import { switchMap, tap } from 'rxjs';
-import { LPlayerLicense, LPlayerZone } from '@interfaces';
+import { LPlayerProperties, LPlayerZone } from '@interfaces';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -14,7 +14,15 @@ import { CommonModule } from '@angular/common';
     styleUrl: './play.component.scss',
 })
 export class PlayComponent implements OnInit {
-    playerLicense!: LPlayerLicense;
+    /**
+     * Holds the license and hardware properties of the player
+     */
+    playerLicenseAndProperties!: LPlayerProperties;
+
+    /**
+     * Holds the player screen and zone properties
+     * @default []
+     */
     screenZones: LPlayerZone[] = [];
 
     constructor(private _request: RequestService) {}
@@ -23,13 +31,17 @@ export class PlayComponent implements OnInit {
         this.initializePlaylistData();
     }
 
-    private initializePlaylistData() {
+    /**
+     * Initializes playlist data by making API requests to retrieve player license, properties, and screen zones.
+     * @returns {void}
+     */
+    private initializePlaylistData(): void {
         this._request
             .getRequest(API_ENDPOINTS.local.get.license)
             .pipe(
                 /** Player license exists */
-                tap((data: LPlayerLicense) => {
-                    this.playerLicense = data;
+                tap((data: LPlayerProperties) => {
+                    this.playerLicenseAndProperties = data;
                 }),
 
                 /** Get player template and zone property */

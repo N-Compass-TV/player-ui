@@ -10,6 +10,16 @@ import { CommonModule } from '@angular/common';
     styleUrl: './zone.component.scss',
 })
 export class ZoneComponent {
+    /**
+     * Data for the player zone.
+     * @type {LPlayerZone}
+     */
     @Input() zoneData!: LPlayerZone;
+
+    /**
+     * Indicates whether the player is in fullscreen mode.
+     * @type {boolean}
+     * @default false
+     */
     @Input() isFullscreen = false;
 }

@@ -4,7 +4,7 @@
  * Note: Data attributes from the local player-server are in snake_case format.
  */
 
-// Defines locally saved zone data
+/** Defines locally saved zone data */
 export interface LPlayerZone {
     background: string;
     height: number;
@@ -18,8 +18,8 @@ export interface LPlayerZone {
     zone_order: number;
 }
 
-// Defines locally saved license data
-export interface LPlayerLicense {
+/** Defines locally saved license data */
+export interface LPlayerProperties {
     license_id: string;
     license_key: string;
     type_id: string;
