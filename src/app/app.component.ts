@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import io from 'socket.io-client';
 import { environment } from '@environments';
@@ -13,7 +13,7 @@ import { AssetDownloadProgress } from '@interfaces';
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
     /**
      * URL where your server is running.
      * @type {string}

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -9,7 +9,7 @@ import { Subject } from 'rxjs';
     templateUrl: './progress-bar.component.html',
     styleUrl: './progress-bar.component.scss',
 })
-export class ProgressBarComponent {
+export class ProgressBarComponent implements OnInit {
     /**
      * Information to be displayed on the progress bar.
      * @type {string}
