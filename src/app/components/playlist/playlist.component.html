@@ -1,1 +1,9 @@
-<div class="playlist"></div>
+<div class="playlist">
+    <ng-container *ngIf="currentPlaylistContent">
+        <app-content
+            [playlistContent]="currentPlaylistContent"
+            [activateTicker]="tickerActivated"
+            (displayEnded)="onDisplayEnded()"
+            (contentRenderErrored)="onContentRenderError()"></app-content>
+    </ng-container>
+</div>

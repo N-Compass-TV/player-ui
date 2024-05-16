@@ -21,6 +21,7 @@ export * from './cloud/Timezone';
  * indicating that the data originates from the local player-server.
  * Note: Data attributes from the local player-server are in snake_case format.
  */
+export * from './local/LPlaylistData';
 export * from './local/LPlayerProperties';
 export * from './local/LPlayerZone';
 
@@ -28,3 +29,4 @@ export * from './local/LPlayerZone';
  * Miscellaneous interfaces, shared
  */
 export * from './misc/ProgressStep';
+export * from './misc/Filetypes';

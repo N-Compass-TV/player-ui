@@ -1,0 +1,17 @@
+.playlist-content {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+img,
+video,
+iframe {
+    background: #000;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 8;
+}

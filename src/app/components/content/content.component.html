@@ -1,0 +1,24 @@
+<div class="playlist-content">
+    <ng-container *ngIf="playlistContent.file_type | image">
+        <img [src]="playlistContent.url | sanitize" alt="{{ playlistContent.file_name }}" (error)="contentErrored()" />
+    </ng-container>
+
+    <ng-container *ngIf="playlistContent.file_type | video">
+        <video
+            [src]="playlistContent.url | sanitize"
+            (ended)="videoEnded()"
+            (error)="contentErrored()"
+            autoplay></video>
+    </ng-container>
+
+    <ng-container *ngIf="playlistContent.file_type | feed">
+        <iframe
+            width="100"
+            height="100"
+            [src]="playlistContent.url | sanitize"
+            frameborder="0"
+            allowfullscreen="true"
+            allow="autoplay"
+            (error)="contentErrored()"></iframe>
+    </ng-container>
+</div>

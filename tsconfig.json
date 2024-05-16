@@ -25,7 +25,8 @@
             "@environments": ["./src/app/environments/index.ts"],
             "@interfaces": ["./src/app/interfaces/index.ts"],
             "@components": ["./src/app/components/index.ts"],
-            "@services": ["./src/app/services/index.ts"]
+            "@services": ["./src/app/services/index.ts"],
+            "@pipes": ["./src/app/pipes/index.ts"]
         },
         "allowSyntheticDefaultImports": true,
         "typeRoots": ["node_modules/@types"],
