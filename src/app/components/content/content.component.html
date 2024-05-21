@@ -1,4 +1,4 @@
-<div class="playlist-content">
+<div class="playlist-content" [ngClass]="playlistContent.is_fullscreen ? 'fullscreen' : ''">
     <ng-container *ngIf="playlistContent.file_type | image">
         <img [src]="playlistContent.url | sanitize" alt="{{ playlistContent.file_name }}" (error)="contentErrored()" />
     </ng-container>

@@ -25,6 +25,13 @@ export class PlayComponent implements OnInit {
      */
     screenZones: LPlayerZone[] = [];
 
+    /**
+     * Indicates the view mode of the content
+     * @type {boolean}
+     * @default false
+     */
+    isFullscreen: boolean = false;
+
     constructor(private _request: RequestService) {}
 
     ngOnInit(): void {
@@ -54,5 +61,14 @@ export class PlayComponent implements OnInit {
                 next: () => {},
                 error: (error) => {},
             });
+    }
+
+    /**
+     * Sets the content display mode
+     * @returns {void}
+     */
+    public setDisplayMode(e: number, zoneOrder: number): void {
+        if (this.screenZones.length > 0 && zoneOrder !== 1) return;
+        this.isFullscreen = e ? true : false;
     }
 }

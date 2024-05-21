@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { RequestService } from '@services';
 import { API_ENDPOINTS } from '@environments';
 import { LPlaylistData } from '@interfaces';
@@ -19,6 +19,13 @@ export class PlaylistComponent implements OnInit {
      * @default ''
      */
     @Input() playlistId: string = '';
+
+    /**
+     * Emits the playlist content is_fullscreen value
+     * @type {number}
+     * @default ''
+     */
+    @Output() onDisplayModeChecked: EventEmitter<number> = new EventEmitter();
 
     /**
      * The current playlist content item.
@@ -86,6 +93,7 @@ export class PlaylistComponent implements OnInit {
         }
 
         this.currentPlaylistContent = this.playlist[this.currentSequence];
+        this.onDisplayModeChecked.emit(this.currentPlaylistContent.is_fullscreen);
     }
 
     /**

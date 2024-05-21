@@ -8,6 +8,6 @@
         'top.%': (zoneData.y_pos / 1080) * 100,
         'z-index': zoneData.zone_order
     }"
-    [ngClass]="isFullscreen ? 'fullscreen' : ''">
+    [ngClass]="isFullscreen && zoneData.zone_order === 1 ? 'fullscreen' : ''">
     <ng-content></ng-content>
 </div>
