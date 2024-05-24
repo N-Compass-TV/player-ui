@@ -1,17 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import io from 'socket.io-client';
 import { environment } from '@environments';
 import { PLAYER_SERVER_SOCKET_EVENTS } from '@constants';
 import { SocketService } from '@services';
 import { AssetDownloadProgress } from '@interfaces';
+import { PlayerDetailsComponent } from '@components';
+import { PlayerDetailsDirective } from '@directives';
 
 @Component({
     selector: 'app-root',
     standalone: true,
-    imports: [RouterOutlet],
+    imports: [RouterOutlet, CommonModule, PlayerDetailsComponent, PlayerDetailsDirective],
     templateUrl: './app.component.html',
-    styleUrl: './app.component.scss',
+    styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
     /**
@@ -23,16 +26,17 @@ export class AppComponent implements OnInit {
 
     /**
      * Client for the socket connection.
-     * @type {any}
+     * @type {SocketIOClient.Socket}
      * @private
      */
     private socketClient!: SocketIOClient.Socket;
 
     /**
-     * Constructor for the class.
-     *
-     * @param {SocketService} _socket - The socket service to handle socket events.
+     * Client for the socket connection.
+     * @type {boolean}
      */
+    public playerDetailsToggle: boolean = false;
+
     constructor(private _socket: SocketService) {
         this.connectToSocket();
     }
@@ -79,5 +83,13 @@ export class AppComponent implements OnInit {
         this.socketClient.on('disconnect', () => {
             console.log('Disconnected to local socket server, Player server is down!');
         });
+    }
+
+    /**
+     * Toggles the visibility of the player details component.
+     * @param {Event} event - The event triggered by the directive.
+     */
+    public togglePlayerDetails(): void {
+        this.playerDetailsToggle = !this.playerDetailsToggle;
     }
 }

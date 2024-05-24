@@ -18,6 +18,7 @@ export class ProgressBarComponent implements OnInit {
     @Input() progressBarInfo: string = '';
 
     /**
+     *
      * Reference for the progress tracking.
      * @type {string}
      * @default ''
@@ -54,8 +55,7 @@ export class ProgressBarComponent implements OnInit {
     private initializeProgressWidthWatcher() {
         this.progressWidthWatch.subscribe({
             next: (data: { key: string; value: number }) => {
-                console.log(data);
-                if (data.key === this.progressReference) this.progressWidth = data.value;
+                if (data.key === this.progressReference) this.progressWidth = isNaN(data.value) ? 0 : data.value;
             },
         });
     }

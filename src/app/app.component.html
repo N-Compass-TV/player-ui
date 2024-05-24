@@ -1,1 +1,11 @@
-<router-outlet></router-outlet>
+<div id="player-ui" class="player-ui" appPlayerDetails (onShowPlayerDetails)="togglePlayerDetails()">
+    <!-- Page Routes -->
+    <router-outlet></router-outlet>
+    <!-- Page Routes -->
+
+    <!-- Player Details Modal -->
+    <ng-container *ngIf="playerDetailsToggle">
+        <app-player-details></app-player-details>
+    </ng-container>
+    <!-- Player Details Modal -->
+</div>
