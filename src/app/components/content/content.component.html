@@ -6,7 +6,7 @@
     <ng-container *ngIf="playlistContent.file_type | video">
         <video
             [src]="playlistContent.url | sanitize"
-            (ended)="videoEnded()"
+            (ended)="contentEnded()"
             (error)="contentErrored()"
             autoplay></video>
     </ng-container>

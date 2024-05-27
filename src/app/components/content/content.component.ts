@@ -2,6 +2,9 @@ import { Component, EventEmitter, Injector, Input, OnInit, Output } from '@angul
 import { CommonModule } from '@angular/common';
 import { FeedPipe, ImagePipe, SanitizePipe, VideoPipe } from '@pipes';
 import { LPlaylistData } from '@interfaces';
+import { take } from 'rxjs';
+import { API_ENDPOINTS } from '../../environments/api-endpoints';
+import { RequestService } from '../../services/request/request.service';
 
 @Component({
     selector: 'app-content',
@@ -56,7 +59,10 @@ export class ContentComponent implements OnInit {
      * Initializes the FeedPipe and ImagePipe using the Angular injector.
      * @param {Injector} injector - The Angular injector.
      */
-    constructor(private injector: Injector) {
+    constructor(
+        private injector: Injector,
+        private _request: RequestService,
+    ) {
         this.feedPipe = this.injector.get(FeedPipe);
         this.imagePipe = this.injector.get(ImagePipe);
     }
@@ -94,7 +100,7 @@ export class ContentComponent implements OnInit {
             if (!this.activateTicker) return;
 
             setTimeout(() => {
-                this.displayEnded.emit(this.playlistContent);
+                this.contentEnded();
             }, this.playlistContent.duration * 1000);
         }
     }
@@ -104,7 +110,19 @@ export class ContentComponent implements OnInit {
      * Emits the displayEnded event with the current playlist content.
      * @returns {void}
      */
-    public videoEnded(): void {
+    public contentEnded(): void {
+        this.hitPlayCount(this.playlistContent.playlist_content_id);
         this.displayEnded.emit(this.playlistContent);
+    }
+
+    /**
+     * Increases the play count for a playlist content.
+     * @param {string} playlistContentId - The ID of the playlist content.
+     * @returns {void}
+     * @private
+     */
+    private hitPlayCount(playlistContentId: string): void {
+        const url = `${API_ENDPOINTS.local.get.log}/${playlistContentId}`;
+        this._request.getRequest(url).pipe(take(1)).subscribe();
     }
 }
