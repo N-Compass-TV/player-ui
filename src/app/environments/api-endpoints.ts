@@ -18,7 +18,7 @@ export const API_ENDPOINTS = {
             download_update: 'update',
             fast_edge: 'player/fastedge/status',
             license: 'license',
-            log: 'content/log/',
+            log: 'content/log',
             ping: 'checkup/ping',
             playlist: 'playlist/',
             player_data: 'player/data/',
