@@ -80,7 +80,7 @@ export class ContentComponent implements OnInit {
      * Emits an event indicating that there was an error rendering the content.
      * @returns {void}
      */
-    public contentErrored() {
+    public contentErrored(): void {
         this.contentRenderErrored.emit(this.playlistContent);
     }
 
