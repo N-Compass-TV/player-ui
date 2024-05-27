@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Injector, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FeedPipe, ImagePipe, SanitizePipe, VideoPipe } from '@pipes';
+import { API_ENDPOINTS } from '@environments';
 import { LPlaylistData } from '@interfaces';
+import { RequestService } from '@services';
 import { take } from 'rxjs';
-import { API_ENDPOINTS } from '../../environments/api-endpoints';
-import { RequestService } from '../../services/request/request.service';
 
 @Component({
     selector: 'app-content',
