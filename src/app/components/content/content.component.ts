@@ -4,7 +4,7 @@ import { take } from 'rxjs';
 import { FeedPipe, ImagePipe, SanitizePipe, VideoPipe } from '@pipes';
 import { API_ENDPOINTS } from '@environments';
 import { LPlaylistData } from '@interfaces';
-import { RequestService } from '@services';
+import { HelperService, RequestService } from '@services';
 
 @Component({
     selector: 'app-content',
@@ -40,19 +40,8 @@ export class ContentComponent implements OnInit {
      */
     @Output() contentRenderErrored: EventEmitter<LPlaylistData> = new EventEmitter();
 
-    /**
-     * Pipe for transforming feed types.
-     * @type {FeedPipe}
-     * @private
-     */
-    private feedPipe: FeedPipe;
-
-    /**
-     * Pipe for transforming image types.
-     * @type {ImagePipe}
-     * @private
-     */
-    private imagePipe: ImagePipe;
+    private isFeed: boolean = false;
+    private isLiveStream: boolean = false;
 
     /**
      * Constructor for the component.
@@ -60,11 +49,14 @@ export class ContentComponent implements OnInit {
      * @param {Injector} injector - The Angular injector.
      */
     constructor(
-        private injector: Injector,
+        private _helper: HelperService,
         private _request: RequestService,
+        private injector: Injector,
     ) {
-        this.feedPipe = this.injector.get(FeedPipe);
-        this.imagePipe = this.injector.get(ImagePipe);
+        const feedPipe = this.injector.get(FeedPipe);
+        const { file_type, classification } = this.playlistContent;
+        this.isFeed = feedPipe.transform(file_type);
+        this.isLiveStream = this.isFeed && classification === 'live_stream';
     }
 
     /**
@@ -73,6 +65,8 @@ export class ContentComponent implements OnInit {
      * @returns {void}
      */
     ngOnInit(): void {
+        // Set livestream content duration to 1ms so it goes through the ticker process
+        if (this.isLiveStream) this.playlistContent.duration = 1;
         this.startTicker();
     }
 
@@ -91,18 +85,18 @@ export class ContentComponent implements OnInit {
      * @returns {void}
      */
     private startTicker(): void {
-        if (!this.playlistContent) return;
+        // Return if playlist content is null or if ticker is not activated (no contents)
+        if (!this.playlistContent || !this.activateTicker) return;
 
-        const isImage = this.imagePipe.transform(this.playlistContent.file_type);
-        const isFeed = this.feedPipe.transform(this.playlistContent.file_type);
+        setTimeout(() => {
+            // Restart startTicker() if content is a livestream and is within scheduled time
+            if (this.isLiveStream && this.isWithinSchedule) {
+                this.startTicker();
+                return;
+            }
 
-        if (isImage || isFeed) {
-            if (!this.activateTicker) return;
-
-            setTimeout(() => {
-                this.contentEnded();
-            }, this.playlistContent.duration * 1000);
-        }
+            this.contentEnded();
+        }, this.playlistContent.duration * 1000);
     }
 
     /**
@@ -124,5 +118,15 @@ export class ContentComponent implements OnInit {
     private hitPlayCount(playlistContentId: string): void {
         const url = `${API_ENDPOINTS.local.get.log}/${playlistContentId}`;
         this._request.getRequest(url).pipe(take(1)).subscribe();
+    }
+
+    /**
+     * Check if content is supposed to play now
+     *
+     * @returns {boolean} Returns true if the content should play now, else false.
+     * @private
+     */
+    private get isWithinSchedule(): boolean {
+        return this._helper.canPlayContent(this.playlistContent);
     }
 }
