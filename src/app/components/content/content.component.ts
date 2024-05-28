@@ -52,12 +52,7 @@ export class ContentComponent implements OnInit {
         private _helper: HelperService,
         private _request: RequestService,
         private injector: Injector,
-    ) {
-        const feedPipe = this.injector.get(FeedPipe);
-        const { file_type, classification } = this.playlistContent;
-        this.isFeed = feedPipe.transform(file_type);
-        this.isLiveStream = this.isFeed && classification === 'live_stream';
-    }
+    ) {}
 
     /**
      * Angular lifecycle hook that is called after the component's view has been initialized.
@@ -65,8 +60,20 @@ export class ContentComponent implements OnInit {
      * @returns {void}
      */
     ngOnInit(): void {
-        // Set livestream content duration to 1ms so it goes through the ticker process
+        // Retrieve the FeedPipe instance from the injector
+        const feedPipe = this.injector.get(FeedPipe);
+
+        // Destructure file_type and classification from playlistContent
+        const { file_type, classification } = this.playlistContent;
+
+        // Determine if the content is a feed and if it is a live stream
+        this.isFeed = feedPipe.transform(file_type);
+        this.isLiveStream = this.isFeed && classification === 'live_stream';
+
+        // Set the duration of live stream content to 1ms for the ticker process
         if (this.isLiveStream) this.playlistContent.duration = 1;
+
+        // Start the ticker process
         this.startTicker();
     }
 
