@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { RequestService } from '@services';
+import { HelperService, RequestService } from '@services';
 import { API_ENDPOINTS } from '@environments';
 import { LPlaylistData } from '@interfaces';
 import { ContentComponent } from '@components';
@@ -55,7 +55,10 @@ export class PlaylistComponent implements OnInit {
      */
     public tickerActivated: boolean = true;
 
-    constructor(private _request: RequestService) {}
+    constructor(
+        private _helper: HelperService,
+        private _request: RequestService,
+    ) {}
 
     ngOnInit(): void {
         this.getPlaylistData();
@@ -76,24 +79,10 @@ export class PlaylistComponent implements OnInit {
                 this.tickerActivated = playlist.length > 1;
                 this.playAd();
             },
-            error: (error) => {},
+            error: (error) => {
+                console.error({ error });
+            },
         });
-    }
-
-    /**
-     * Plays the advertisement by setting the current playlist content
-     * based on the current sequence. If the current sequence exceeds
-     * the length of the playlist, it resets the sequence to 0.
-     * @private
-     * @returns {void}
-     */
-    private playAd() {
-        if (this.currentSequence >= this.playlist.length) {
-            this.currentSequence = 0;
-        }
-
-        this.currentPlaylistContent = this.playlist[this.currentSequence];
-        this.onDisplayModeChecked.emit(this.currentPlaylistContent.is_fullscreen);
     }
 
     /**
@@ -119,12 +108,44 @@ export class PlaylistComponent implements OnInit {
      * @public
      * @returns {void}
      */
-    public onDisplayEnded() {
+    public onDisplayEnded(): void {
         this.currentSequence += 1;
         this.currentPlaylistContent = null;
 
         setTimeout(() => {
             this.playAd();
         }, 0);
+    }
+
+    /**
+     * Plays the advertisement by setting the current playlist content
+     * based on the current sequence. If the current sequence exceeds
+     * the length of the playlist, it resets the sequence to 0.
+     * @private
+     * @returns {void}
+     */
+    private playAd(): void {
+        if (this.playlist.length === 0) {
+            console.warn('Playlist is empty.');
+            return;
+        }
+
+        let initialSequence = this.currentSequence;
+        do {
+            if (this._helper.canPlayContent(this.playlist[this.currentSequence])) {
+                this.currentPlaylistContent = this.playlist[this.currentSequence];
+                this.onDisplayModeChecked.emit(this.currentPlaylistContent.is_fullscreen);
+                return;
+            }
+
+            /**
+             * This ensures that the sequence number always stays within the valid range
+             * of indices for the playlist array, effectively cycling through the playlist
+             * items repeatedly.
+             */
+            this.currentSequence = (this.currentSequence + 1) % this.playlist.length;
+        } while (this.currentSequence !== initialSequence);
+
+        console.warn('No playable content found in the playlist.');
     }
 }
