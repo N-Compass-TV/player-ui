@@ -17,9 +17,7 @@ export class PlayerDetailsDirective {
      */
     @HostListener('window:keydown', ['$event'])
     public handleKeyboardEvent(event: KeyboardEvent): void {
-        console.log('Keydown event:', event); // Log the event to see if it's detected
         if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'y') {
-            console.log('CTRL + SHIFT + Y detected'); // Log when the key combination is detected
             this.onShowPlayerDetails.emit();
         }
     }

@@ -1,9 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { HelperService, RequestService } from '@services';
+
+/** Components */
+import { ContentComponent } from '@components/content';
+
+/** Services */
+import { RequestService } from '@services/request';
+import { HelperService } from '@services/helper';
+
+/** Environments */
 import { API_ENDPOINTS } from '@environments';
-import { LPlaylistData } from '@interfaces';
-import { ContentComponent } from '@components';
+
+/** Interfaces */
+import { LPlaylistData } from '@interfaces/local';
 
 @Component({
     selector: 'app-playlist',
@@ -93,7 +102,7 @@ export class PlaylistComponent implements OnInit {
      * @public
      * @returns {void}
      */
-    public onContentRenderError(): void {
+    public onContentRenderError(e: any): void {
         this.currentSequence += 1;
         this.currentPlaylistContent = null;
 

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { IMAGE_TYPES } from '@interfaces';
+import { IMAGE_TYPES } from '@constants';
 
 @Pipe({
     name: 'image',

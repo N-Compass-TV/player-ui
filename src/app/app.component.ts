@@ -4,10 +4,10 @@ import { CommonModule } from '@angular/common';
 import io from 'socket.io-client';
 import { environment } from '@environments';
 import { PLAYER_SERVER_SOCKET_EVENTS } from '@constants';
-import { SocketService } from '@services';
-import { AssetDownloadProgress } from '@interfaces';
-import { PlayerDetailsComponent } from '@components';
-import { PlayerDetailsDirective } from '@directives';
+import { SocketService } from '@services/socket';
+import { AssetDownloadProgress } from '@interfaces/misc';
+import { PlayerDetailsComponent } from '@components/player-details';
+import { PlayerDetailsDirective } from '@directives/player-details';
 
 @Component({
     selector: 'app-root',

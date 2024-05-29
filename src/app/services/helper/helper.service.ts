@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LPlaylistData } from '@interfaces';
+import { LPlaylistData } from '@interfaces/local';
 import { PLAY_TYPE } from '@constants';
 
 @Injectable({

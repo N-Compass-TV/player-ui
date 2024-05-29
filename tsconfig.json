@@ -23,11 +23,11 @@
         "paths": {
             "@constants": ["./src/app/constants/index.ts"],
             "@environments": ["./src/app/environments/index.ts"],
-            "@interfaces": ["./src/app/interfaces/index.ts"],
-            "@components": ["./src/app/components/index.ts"],
-            "@directives": ["./src/app/directives/index.ts"],
-            "@services": ["./src/app/services/index.ts"],
-            "@pipes": ["./src/app/pipes/index.ts"]
+            "@interfaces/*": ["./src/app/interfaces/*"],
+            "@components/*": ["./src/app/components/*"],
+            "@directives/*": ["./src/app/directives/*"],
+            "@services/*": ["./src/app/services/*"],
+            "@pipes/*": ["./src/app/pipes/*"]
         },
         "allowSyntheticDefaultImports": true,
         "typeRoots": ["node_modules/@types"],

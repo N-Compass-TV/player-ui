@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { FEED_TYPES } from '../interfaces/misc/Filetypes';
+import { FEED_TYPES } from '@constants';
 
 @Pipe({
     name: 'feed',

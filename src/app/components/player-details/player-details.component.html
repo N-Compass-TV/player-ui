@@ -3,38 +3,23 @@
         <div class="flex">
             <div class="player-details__information__dealer-host-screen-schedule">
                 <div class="player-details__information__cell alias">
-                    <span class="info">98366c3e-c4c6-4af0-b12f-cdd827b3b481</span>
+                    <span class="info">{{ playerDetails.licenseKey }}</span>
                     <span class="label">License Key</span>
                 </div>
 
-                <div class="player-details__information__cell alias">
-                    <span class="info">License #21</span>
-                    <span class="label">Alias</span>
-                </div>
-
                 <div class="player-details__information__cell dealer-information">
-                    <span class="info">Rico's Lechonan</span>
+                    <span class="info">{{ playerDetails.dealerName }}</span>
                     <span class="label">Dealer Name</span>
                 </div>
 
                 <div class="player-details__information__cell host-information">
-                    <span class="info">Insular Life Building</span>
+                    <span class="info">{{ playerDetails.hostName }}</span>
                     <span class="label">Host Name</span>
                 </div>
 
-                <div class="player-details__information__cell screen">
-                    <span class="info">Rico's Lechonan Screen</span>
+                <div class="player-details__information__cell screen no-margin-bottom">
+                    <span class="info">{{ playerDetails.screenName }}</span>
                     <span class="label">Screen</span>
-                </div>
-
-                <div class="player-details__information__cell template">
-                    <span class="info">Standard Template</span>
-                    <span class="label">Template</span>
-                </div>
-
-                <div class="player-details__information__cell schedule no-margin-bottom">
-                    <span class="info">Open (Wed 8am - 5pm)</span>
-                    <span class="label">Schedule</span>
                 </div>
             </div>
         </div>
