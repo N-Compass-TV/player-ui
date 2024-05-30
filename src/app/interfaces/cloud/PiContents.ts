@@ -1,6 +1,7 @@
 import { Content } from './Content';
 import { Dealer } from './Dealer';
 import { Host } from './Host';
+import { Screen } from './Screen';
 import { ScreenTemplateZone } from './ScreenTemplateZones';
 import { ScreenType } from './ScreenType';
 import { Timezone } from './Timezone';

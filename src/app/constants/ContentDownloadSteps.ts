@@ -1,4 +1,4 @@
-import { ProgressStep } from '@interfaces';
+import { ProgressStep } from '@interfaces/misc';
 
 /** Health check steps */
 export const CONTENT_DOWNLOAD_STEPS: ProgressStep[] = [

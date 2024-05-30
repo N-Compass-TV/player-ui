@@ -1,11 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { switchMap, tap } from 'rxjs';
-import { AnimatedLoaderComponent, ProgressBarComponent } from '@components';
-import { HEALTH_CHECK_STEPS } from '@constants';
-import { RequestService } from '@services';
+
+/** Components */
+import { AnimatedLoaderComponent } from '@components/animated-loader';
+import { ProgressBarComponent } from '@components/progress-bar';
+
+/** Services */
+import { RequestService } from '@services/request';
+import { ProgressStep } from '@interfaces/misc';
+import { LError, LLicenseSettings } from '@interfaces/local';
+
+/** Constants */
+import { HEALTH_CHECK_STEPS, SERVER_ERROR_CODE } from '@constants';
+
+/** Environments */
 import { API_ENDPOINTS } from '@environments';
-import { ProgressStep } from '../../interfaces/misc/ProgressStep';
 
 @Component({
     selector: 'app-health-check',
@@ -110,11 +120,14 @@ export class HealthCheckComponent implements OnInit {
             )
             .subscribe({
                 next: (checkLicenseResponse: any) => {
-                    const licenseData = checkLicenseResponse[0];
+                    const licenseData: LLicenseSettings = checkLicenseResponse[0];
 
                     // Update display message
                     this.title = this.getSubtitleMessage(6).title;
                     this.subtitle = this.getSubtitleMessage(6).subtitle;
+
+                    // Save to local storage
+                    localStorage.setItem('licenseData', JSON.stringify(licenseData));
 
                     // Redirect to asset downloader page
                     setTimeout(
@@ -125,13 +138,23 @@ export class HealthCheckComponent implements OnInit {
                         2000,
                     );
                 },
-                error: (error) => {
-                    // Handle any errors that occur during the observable chain
-                    console.error('An error occurred:', error);
+                error: (error: LError) => {
+                    // Extract error properties
+                    // @todo - improve error object returned by the API
+                    const { message, details, code } = error.error.error;
 
-                    // Update the title to reflect the error state
+                    // Log the error code for debugging purposes
+                    console.error('An error occurred:', code);
+
+                    // Handle specific error codes
+                    if (code === SERVER_ERROR_CODE.no_license) {
+                        this._router.navigate(['license-setup']);
+                        return;
+                    }
+
+                    // Update the title and subtitle to reflect the error state
                     this.title = 'Error Occurred';
-                    this.subtitle = 'Something went wrong, please contact your administrator';
+                    this.subtitle = details || 'Something went wrong, please contact your administrator';
                 },
             });
     }

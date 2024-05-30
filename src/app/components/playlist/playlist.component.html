@@ -4,6 +4,6 @@
             [playlistContent]="currentPlaylistContent"
             [activateTicker]="tickerActivated"
             (displayEnded)="onDisplayEnded()"
-            (contentRenderErrored)="onContentRenderError()"></app-content>
+            (contentRenderErrored)="onContentRenderError($event)"></app-content>
     </ng-container>
 </div>

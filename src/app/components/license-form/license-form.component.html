@@ -1,1 +1,23 @@
-<p>license-form works!</p>
+<div id="license-setup-form" class="license-setup-form">
+    <form
+        class="license-setup-form__form-group"
+        [formGroup]="licenseKeyForm"
+        (ngSubmit)="onSubmit(licenseKeyForm.value.licenseKey)">
+        <div class="form-field-wrap">
+            <input
+                formControlName="licenseKey"
+                class="license-setup-form__form-control"
+                type="text"
+                [placeholder]="formConstants.placeholder" />
+            <button
+                [class.active]="licenseKeyForm.valid && !registeringLicense"
+                class="license-setup-form__form-submit-btn">
+                {{ registeringLicense }}
+            </button>
+            <div *ngIf="licenseKey?.invalid && licenseKey?.touched">
+                <small *ngIf="licenseKey?.errors?.['required']">{{ formConstants.licenseError }}</small>
+                <small *ngIf="licenseKey?.errors?.['invalidUuid']">{{ formConstants.invalidUUIDError }}</small>
+            </div>
+        </div>
+    </form>
+</div>

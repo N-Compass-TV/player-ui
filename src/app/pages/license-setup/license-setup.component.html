@@ -1,1 +1,14 @@
-<div id="license-setup" class="page"></div>
+<div id="license-setup" class="page centered">
+    <div class="license-setup__license-form">
+        <div class="page__title-and-loader">
+            <h2 class="page__step-wrapper-title flex-1">{{ pageConstants.title }}</h2>
+            <div class="page__loader" *ngIf="registeringLicense">
+                <app-animated-loader></app-animated-loader>
+            </div>
+        </div>
+
+        <app-license-form
+            [registeringLicense]="registeringLicense"
+            (onFormSubmit)="registerLicenseKey($event)"></app-license-form>
+    </div>
+</div>

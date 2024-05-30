@@ -1,0 +1,50 @@
+.license-setup-form {
+    .form-field-wrap {
+        border: 2px solid #fff;
+        border-radius: 90px;
+        position: relative;
+        overflow: hidden;
+        height: 73px;
+        width: 850px;
+    }
+
+    &__form-control {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.3em;
+        letter-spacing: 2px;
+        outline: none;
+        display: block;
+        padding: 0 30px;
+        position: absolute;
+        height: 100%;
+        width: calc(100% - 200px);
+    }
+
+    &__form-submit-btn {
+        background: #505050;
+        border-radius: 100px;
+        border: none;
+        color: #aaa;
+        cursor: not-allowed;
+        font-size: 1.4em;
+        font-weight: bold;
+        height: 55px;
+        padding: 0 20px;
+        position: absolute;
+        right: 7px;
+        top: 7px;
+        width: 150px;
+
+        &.active {
+            background: #77a718;
+            color: #fff;
+            cursor: pointer;
+
+            &:hover {
+                background: #7cc214;
+            }
+        }
+    }
+}

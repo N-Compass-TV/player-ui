@@ -2,11 +2,24 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, delay, switchMap, takeUntil, tap } from 'rxjs';
-import { API_ENDPOINTS } from '@environments';
+
+/** Components */
+import { AnimatedLoaderComponent } from '@components/animated-loader';
+import { ProgressBarComponent } from '@components/progress-bar';
+
+/** Interfaces */
+import { AssetDownloadProgress, ProgressStep } from '@interfaces/misc';
+import { Content, PlayerData } from '@interfaces/cloud';
+
+/** Constants */
 import { CONTENT_DOWNLOAD_STEPS } from '@constants';
-import { AnimatedLoaderComponent, ProgressBarComponent } from '@components';
-import { AssetDownloadProgress, Content, PlayerData, ProgressStep } from '@interfaces';
-import { RequestService, SocketService } from '@services';
+
+/** Services */
+import { RequestService } from '@services/request';
+import { SocketService } from '@services/socket';
+
+/** Environments */
+import { API_ENDPOINTS } from '@environments';
 
 @Component({
     selector: 'app-content-setup',

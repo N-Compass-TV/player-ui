@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { LPlayerZone } from '@interfaces';
 import { CommonModule } from '@angular/common';
+
+/** Interfaces */
+import { LPlayerZone } from '@interfaces/local';
 
 @Component({
     selector: 'app-zone',

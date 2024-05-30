@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { VIDEO_TYPES } from '@interfaces';
+import { VIDEO_TYPES } from '@constants';
 
 @Pipe({
     name: 'video',

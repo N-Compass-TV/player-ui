@@ -1,10 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { PlaylistComponent, ZoneComponent } from '@components';
-import { RequestService } from '@services';
-import { API_ENDPOINTS } from '@environments';
-import { switchMap, tap } from 'rxjs';
-import { LPlayerProperties, LPlayerZone } from '@interfaces';
 import { CommonModule } from '@angular/common';
+import { switchMap, tap } from 'rxjs';
+
+/** Components */
+import { PlaylistComponent } from '@components/playlist';
+import { ZoneComponent } from '@components/zone';
+
+/** Services */
+import { RequestService } from '@services/request';
+
+/** Interfaces */
+import { LPlayerProperties, LPlayerZone } from '@interfaces/local';
+
+/** Environments */
+import { API_ENDPOINTS } from '@environments';
 
 @Component({
     selector: 'app-play',

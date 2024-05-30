@@ -1,10 +1,22 @@
 import { Component, EventEmitter, Injector, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { take } from 'rxjs';
-import { FeedPipe, ImagePipe, SanitizePipe, VideoPipe } from '@pipes';
+
+/** Pipes */
+import { FeedPipe } from '@pipes/feed';
+import { ImagePipe } from '@pipes/image';
+import { SanitizePipe } from '@pipes/sanitize';
+import { VideoPipe } from '@pipes/video';
+
+/** Interfaces */
+import { LPlaylistData } from '@interfaces/local';
+import { HelperService } from '@services/helper';
+
+/** Services */
+import { RequestService } from '@services/request';
+
+/** Environments */
 import { API_ENDPOINTS } from '@environments';
-import { LPlaylistData } from '@interfaces';
-import { HelperService, RequestService } from '@services';
 
 @Component({
     selector: 'app-content',
@@ -52,12 +64,7 @@ export class ContentComponent implements OnInit {
         private _helper: HelperService,
         private _request: RequestService,
         private injector: Injector,
-    ) {
-        const feedPipe = this.injector.get(FeedPipe);
-        const { file_type, classification } = this.playlistContent;
-        this.isFeed = feedPipe.transform(file_type);
-        this.isLiveStream = this.isFeed && classification === 'live_stream';
-    }
+    ) {}
 
     /**
      * Angular lifecycle hook that is called after the component's view has been initialized.
@@ -65,16 +72,31 @@ export class ContentComponent implements OnInit {
      * @returns {void}
      */
     ngOnInit(): void {
-        // Set livestream content duration to 1ms so it goes through the ticker process
-        if (this.isLiveStream) this.playlistContent.duration = 1;
-        this.startTicker();
+        // Retrieve the FeedPipe instance from the injector
+        const feedPipe = this.injector.get(FeedPipe);
+        const videoPipe = this.injector.get(VideoPipe);
+        const { file_type, classification } = this.playlistContent;
+
+        // Determine if the content is a feed and if it is a live stream
+        this.isFeed = feedPipe.transform(file_type);
+        this.isLiveStream = this.isFeed && classification === 'live_stream';
+
+        // Set the duration of live stream content to 1ms for the ticker process
+        if (this.isLiveStream) {
+            this.playlistContent.duration = 1;
+        }
+
+        // Run ticker only if the playlist content is NOT a video
+        if (!videoPipe.transform(this.playlistContent.file_type)) {
+            this.startTicker();
+        }
     }
 
     /**
      * Emits an event indicating that there was an error rendering the content.
      * @returns {void}
      */
-    public contentErrored() {
+    public contentErrored(): void {
         this.contentRenderErrored.emit(this.playlistContent);
     }
 
@@ -94,7 +116,6 @@ export class ContentComponent implements OnInit {
                 this.startTicker();
                 return;
             }
-
             this.contentEnded();
         }, this.playlistContent.duration * 1000);
     }
@@ -122,7 +143,6 @@ export class ContentComponent implements OnInit {
 
     /**
      * Check if content is supposed to play now
-     *
      * @returns {boolean} Returns true if the content should play now, else false.
      * @private
      */
