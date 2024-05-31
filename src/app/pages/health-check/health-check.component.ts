@@ -138,23 +138,21 @@ export class HealthCheckComponent implements OnInit {
                         2000,
                     );
                 },
-                error: (error: LError) => {
-                    // Extract error properties
-                    // @todo - improve error object returned by the API
-                    const { message, details, code } = error.error.error;
+                error: (error: any) => {
+                    /** @todo - improve error object returned by the API */
+                    if (error && error.error && error.error.error) {
+                        const { message, details, code } = error.error.error;
 
-                    // Log the error code for debugging purposes
-                    console.error('An error occurred:', code);
-
-                    // Handle specific error codes
-                    if (code === SERVER_ERROR_CODE.no_license) {
-                        this._router.navigate(['license-setup']);
-                        return;
+                        // Handle specific error codes
+                        if (code === SERVER_ERROR_CODE.no_license) {
+                            this._router.navigate(['license-setup']);
+                            return;
+                        }
                     }
 
                     // Update the title and subtitle to reflect the error state
-                    this.title = 'Error Occurred';
-                    this.subtitle = details || 'Something went wrong, please contact your administrator';
+                    this.title = 'Health Check Error';
+                    this.subtitle = 'Something went wrong, please contact your administrator';
                 },
             });
     }

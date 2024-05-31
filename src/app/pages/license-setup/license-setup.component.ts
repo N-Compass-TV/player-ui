@@ -56,6 +56,11 @@ export class LicenseSetupComponent implements OnInit {
         private _router: Router,
     ) {}
 
+    /**
+     * Retrieves device information and updates the deviceInfo property.
+     * Makes a GET request to the device_info endpoint.
+     * Updates the deviceInfo object with the received data.
+     */
     private getDeviceInfo() {
         this._request.getRequest(API_ENDPOINTS.local.get.device_info).subscribe({
             next: (deviceInfo: LDeviceInfo) => {
@@ -76,6 +81,14 @@ export class LicenseSetupComponent implements OnInit {
         });
     }
 
+    /**
+     * Registers the provided license key for the device.
+     * Makes a POST request to register the license key.
+     * Updates the deviceInfo object with the license key.
+     * Stores license settings in localStorage and navigates to the content setup page upon success.
+     * @param {string} licenseKeyValue - The license key to register.
+     * @public
+     */
     public registerLicenseKey(licenseKeyValue: string): void {
         if (!licenseKeyValue) return;
 
@@ -122,8 +135,8 @@ export class LicenseSetupComponent implements OnInit {
                 },
                 error: (error: LError) => {
                     this.registeringLicense = false;
-                    this.pageConstants.title = 'Error occured';
-                    console.error(`Something went wrong: ${error}`);
+                    this.pageConstants.title = `Registration Error`;
+                    console.error(`License registration error: ${error}`);
                 },
             });
     }

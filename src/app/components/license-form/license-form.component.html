@@ -12,7 +12,7 @@
             <button
                 [class.active]="licenseKeyForm.valid && !registeringLicense"
                 class="license-setup-form__form-submit-btn">
-                {{ registeringLicense }}
+                {{ formConstants.buttonText }}
             </button>
             <div *ngIf="licenseKey?.invalid && licenseKey?.touched">
                 <small *ngIf="licenseKey?.errors?.['required']">{{ formConstants.licenseError }}</small>
