@@ -32,36 +32,44 @@
     margin-top: 0.6em;
 }
 
+.mb-2 {
+    margin-bottom: 2em;
+}
+
 .page {
     &__title-and-loader {
         align-items: center;
         display: flex;
-        margin-bottom: 20px;
+        margin-bottom: 2%;
     }
 
     &__step-wrapper {
-        width: 992px;
+        width: 80%;
+        max-width: 50%;
     }
 
     &__step-wrapper-header,
     &__step-wrapper-progress-bar {
-        margin-bottom: 24px;
+        margin-bottom: 2.5%;
     }
 
-    &__step-wrapper-title {
+    &__title {
         color: #fff;
-        font-size: 45px;
+        font-size: 2.5vw;
         font-weight: bold;
+        line-height: 3vw;
     }
 
     &__step-wrapper-subtitle {
         color: #fff;
-        font-size: 22px;
+        font-size: 1.5vw;
         font-weight: 500;
-        margin-bottom: 20px;
+        margin-bottom: 2%;
+        line-height: 2vw;
 
         &--small {
-            font-size: 16px;
+            font-size: 1vw;
+            line-height: 1.2vw;
         }
     }
 
@@ -73,7 +81,7 @@
 
     &__progress-area {
         background-color: #202020;
-        border-radius: 10px;
+        border-radius: 1vw;
         height: 0;
         overflow: auto;
         position: relative;
@@ -84,45 +92,37 @@
             background-color: #202020;
             color: #88d711;
             display: flex;
-            font-size: 40px;
+            font-size: 2.5vw;
             height: 100%;
             justify-content: center;
             width: 100%;
             position: absolute;
             top: 0;
             left: 0;
+            line-height: 3vw;
         }
     }
 
     &__progress-area-show {
-        min-height: 400px;
-        padding: 30px;
+        min-height: 40vh;
+        padding: 3%;
     }
 
     &__title-progress-subtitle-wrapper {
-        margin-bottom: 40px;
+        margin-bottom: 4%;
     }
 
     &__downloadable-items {
-        margin-bottom: 10px;
+        margin-bottom: 1%;
         opacity: 1;
-        transition:
-            opacity 0.8s ease-in-out,
-            height 0.8s ease-in-out,
-            margin-bottom 0.8 ease-in-out;
         height: auto;
         overflow: hidden;
-        margin-left: 0px;
+        margin-left: 0;
 
         &--hidden {
             opacity: 0;
-            transition:
-                opacity 1s ease-in-out,
-                height 1s ease-in-out,
-                margin-left 1s ease-in-out,
-                margin-bottom 1s ease-in-out;
             height: 0;
-            margin-left: -120px;
+            margin-left: -12vw;
             margin-bottom: 0;
         }
     }

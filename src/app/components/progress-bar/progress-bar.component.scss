@@ -1,7 +1,7 @@
 .progress-bar {
     background-color: #f0f0f0;
-    border-radius: 999px;
-    height: 8px;
+    border-radius: 99px;
+    height: 0.4vw;
     overflow: hidden;
     position: relative;
     width: 100%;
@@ -11,14 +11,14 @@
         height: 100%;
         left: 0;
         position: absolute;
-        transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        transition: all 0.35s ease;
         top: 0;
     }
 
     &__info {
         color: #fff;
-        font-size: 18px;
+        font-size: 0.94vw;
         font-weight: 500;
-        margin-bottom: 20px;
+        margin-bottom: 1.04vw;
     }
 }

@@ -2,7 +2,7 @@
     <div class="page__step-wrapper">
         <div class="page__title-progress-subtitle-wrapper">
             <div class="page__title-and-loader">
-                <h2 class="page__step-wrapper-title flex-1">{{ title }}</h2>
+                <h2 class="page__title flex-1">{{ title }}</h2>
                 <app-animated-loader></app-animated-loader>
             </div>
             <div class="page__step-wrapper-progress-bar">
@@ -21,7 +21,7 @@
         </div>
 
         <div class="page__progress-area" [ngClass]="readyToDownload ? 'page__progress-area-show' : ''">
-            <ng-container *ngFor="let asset of playerAssets; let i = index">
+            <ng-container *ngFor="let asset of playerAssets; let i = index; trackBy: trackByAsset">
                 <div
                     class="page__downloadable-items"
                     [ngClass]="
@@ -29,7 +29,7 @@
                     ">
                     <app-progress-bar
                         [progressReference]="asset.contentId"
-                        [progressWidthWatch]="assetDownloadProgress"
+                        [progressWidth]="asset.progressWidthTracker"
                         [progressBarInfo]="asset.fileName || asset.title">
                     </app-progress-bar>
                 </div>

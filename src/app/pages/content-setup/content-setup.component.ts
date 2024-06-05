@@ -156,27 +156,24 @@ export class ContentSetupComponent implements OnInit {
     private assetDownloadWatch(): void {
         this._socket.downloaded$.subscribe({
             next: (data: AssetDownloadProgress) => {
-                /** Update progress immediately */
-                this.assetDownloadProgress.next({
-                    key: data.content_id,
-                    value: Number(data.progress),
-                });
+                this.playerAssets.find((asset) => asset.contentId === data.content_id)!.progressWidthTracker = Number(
+                    data.progress,
+                );
 
-                if (Number(data.progress) === 100) {
-                    /** Find the index of the content object */
-                    const index = this.playerAssets.findIndex((asset) => asset.contentId === data.content_id);
+                setTimeout(() => {
+                    if (Number(data.progress) === 100) {
+                        /** Find the index of the content object */
+                        const index = this.playerAssets.findIndex((asset) => asset.contentId === data.content_id);
 
-                    /** If found, remove the object and unshift it to the beginning of the array */
-                    if (index !== -1) {
-                        const [contentObject] = this.playerAssets.splice(index, 1);
-                        this.playerAssets.unshift(contentObject);
-                    }
+                        /** If found, remove the object and unshift it to the beginning of the array */
+                        if (index !== -1) {
+                            const [contentObject] = this.playerAssets.splice(index, 1);
+                            this.playerAssets.unshift(contentObject);
+                        }
 
-                    /** Delay the push to downloadedPlayerAssets to ensure it happens after reordering */
-                    setTimeout(() => {
                         this.downloadedPlayerAssets.push(data.content_id);
-                    }, 1000);
-                }
+                    }
+                }, 700);
             },
             error: (err) => {
                 console.error('Error in asset download watch:', err);
@@ -243,7 +240,7 @@ export class ContentSetupComponent implements OnInit {
 
                     setTimeout(() => {
                         this._router.navigate(['play']);
-                    }, 4000);
+                    }, 5000);
                 },
                 error: (error) => {
                     /** Handle any errors that occur during the observable chain */
@@ -272,5 +269,13 @@ export class ContentSetupComponent implements OnInit {
         }
 
         return this.steps.find((s) => s.step === step) || { title: '', subtitle: '', step: 0 };
+    }
+
+    /** NgFor tracker
+     * @public
+     * @returns number
+     */
+    public trackByAsset(index: number, asset: any): number {
+        return asset.contentId;
     }
 }

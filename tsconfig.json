@@ -25,6 +25,7 @@
             "@environments": ["./src/app/environments/index.ts"],
             "@interfaces/*": ["./src/app/interfaces/*"],
             "@components/*": ["./src/app/components/*"],
+            "@pages/*": ["./src/app/pages/*"],
             "@directives/*": ["./src/app/directives/*"],
             "@services/*": ["./src/app/services/*"],
             "@pipes/*": ["./src/app/pipes/*"]

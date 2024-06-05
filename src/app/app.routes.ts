@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
-import { HealthCheckComponent } from './pages/health-check/health-check.component';
-import { LicenseSetupComponent } from './pages/license-setup/license-setup.component';
-import { ContentSetupComponent } from './pages/content-setup/content-setup.component';
-import { PlayComponent } from './pages/play/play.component';
+import { HealthCheckComponent } from '@pages/health-check';
+import { LicenseSetupComponent } from '@pages/license-setup';
+import { ContentSetupComponent } from '@pages/content-setup';
+import { PlayComponent } from '@pages/play';
+import { ResetComponent } from '@pages/reset';
 
 export const routes: Routes = [
     {
@@ -20,5 +21,9 @@ export const routes: Routes = [
     {
         path: 'play',
         component: PlayComponent,
+    },
+    {
+        path: 'reset',
+        component: ResetComponent,
     },
 ];

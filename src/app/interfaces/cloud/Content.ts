@@ -44,4 +44,5 @@ export interface Content {
     totalPlayed: number;
     url: string;
     uuid: string | null;
+    progressWidthTracker: any;
 }
