@@ -22,4 +22,9 @@ export const CONTENT_DOWNLOAD_STEPS: ProgressStep[] = [
         subtitle: 'Assets downloaded! Playing ads shortly!',
         step: 4,
     },
+    {
+        title: 'Refetch Started',
+        subtitle: 'Redownloading player data and assets',
+        step: 5,
+    },
 ];

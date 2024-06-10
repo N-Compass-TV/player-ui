@@ -13,10 +13,36 @@ export class SocketService {
     private downloaded = new Subject<any>();
 
     /**
+     * Subject to track socket emissions
+     * @type {Subject<any>}
+     * @private
+     */
+    private emit = new Subject<any>();
+
+    /**
+     * Subject to track player schedule related events
+     * @type {Subject<any>}
+     * @private
+     */
+    private schedule = new Subject<any>();
+
+    /**
      * Observable to subscribe to downloaded assets notifications.
      * @type {Observable<any>}
      */
     downloaded$ = this.downloaded.asObservable();
+
+    /**
+     * Observable to subscribe to socket emissions
+     * @type {Observable<any>}
+     */
+    emit$ = this.downloaded.asObservable();
+
+    /**
+     * Observable to subscribe to player schedule events
+     * @type {Observable<any>}
+     */
+    schedule$ = this.downloaded.asObservable();
 
     constructor() {}
 
@@ -27,5 +53,19 @@ export class SocketService {
      */
     public assetDownloaded(downloadData: any): void {
         this.downloaded.next(downloadData);
+    }
+
+    /**
+     * Notifies that a socket event needs to be emitted
+     * @param {string} event - The socket event
+     * @param {any} data - The socket event
+     * @returns {void}
+     */
+    public emitEvent(event: string, data: any): void {
+        this.emit.next({ event, data });
+    }
+
+    public onScheduleCheck(scheduleData: any): void {
+        this.schedule.next(scheduleData);
     }
 }

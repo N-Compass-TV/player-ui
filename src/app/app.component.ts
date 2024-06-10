@@ -9,7 +9,7 @@ import { AssetDownloadProgress } from '@interfaces/misc';
 import { PlayerDetailsComponent } from '@components/player-details';
 import { PlayerDetailsDirective } from '@directives/player-details';
 import { RequestService } from '@services/request';
-import { LLicenseSettings } from '@interfaces/local';
+import { LLicenseSettings, PlayerSchedule } from '@interfaces/local';
 
 @Component({
     selector: 'app-root',
@@ -37,7 +37,7 @@ export class AppComponent implements OnInit {
      * Client for the socket connection.
      * @type {boolean}
      */
-    public playerDetailsToggle: boolean = false;
+    playerDetailsToggle: boolean = false;
 
     constructor(
         private _request: RequestService,
@@ -80,6 +80,15 @@ export class AppComponent implements OnInit {
      */
     private setupSocketListeners(): void {
         /**
+         * Event listener for license activation.
+         * Re-routes the app to the content-setup page to retry the player data download.
+         */
+        this.socketClient.on(PLAYER_SERVER_SOCKET_EVENTS.activated, () => {
+            console.log('Player license has been activated! Retrying setup');
+            this.redirectToContentSetup();
+        });
+
+        /**
          * Event listener for socket connection.
          * Logs a message when successfully connected to the local socket server.
          */
@@ -112,15 +121,26 @@ export class AppComponent implements OnInit {
          */
         this.socketClient.on(PLAYER_SERVER_SOCKET_EVENTS.contentUpdate, () => {
             this._request.getRequest(API_ENDPOINTS.nctv.ping, true).subscribe({
-                next: (_) => {
-                    const licenseData: LLicenseSettings | null =
-                        JSON.parse(localStorage.getItem('licenseData')!) || null;
-
-                    this._router.navigate(['/content-setup'], {
-                        queryParams: { licenseKey: licenseData?.license_key },
-                    });
-                },
+                next: () => this.redirectToContentSetup(),
             });
+        });
+
+        /**
+         * Event listener for license activation.
+         * Re-routes the app to the content-setup page to retry the player data download.
+         */
+        this.socketClient.on(PLAYER_SERVER_SOCKET_EVENTS.activated, () => {
+            console.log('Player license has been activated! Retrying setup');
+            this.redirectToContentSetup();
+        });
+
+        /**
+         * Event listener for player refetch.
+         * Redirects to the /content-setup page which triggers the Refetch API
+         */
+        this.socketClient.on(PLAYER_SERVER_SOCKET_EVENTS.refetch, () => {
+            console.log('Refetch signal received! Initiating refetch sequence');
+            this.redirectToContentSetup(true);
         });
 
         /**
@@ -129,6 +149,27 @@ export class AppComponent implements OnInit {
          */
         this.socketClient.on(PLAYER_SERVER_SOCKET_EVENTS.reset, () => {
             this._router.navigate(['/reset']);
+        });
+
+        /**
+         * Event listener for business schedule
+         * Displays ads if schedule is open and a black screen if close
+         */
+        this.socketClient.on(PLAYER_SERVER_SOCKET_EVENTS.schedule_check, (data: PlayerSchedule) => {
+            console.log('Business hours operation schedule sent from player server');
+            this._socket.onScheduleCheck(data);
+        });
+    }
+
+    /**
+     * Shared method to redirect app to content setup page
+     * @param {boolean} refetch - true or false, appends refetch on URL parameters
+     * @private
+     * */
+    private redirectToContentSetup(refetch: boolean = false): void {
+        const licenseData: LLicenseSettings | null = JSON.parse(localStorage.getItem('licenseData')!) || null;
+        this._router.navigate(['/content-setup'], {
+            queryParams: { licenseKey: licenseData?.license_key, refetch },
         });
     }
 

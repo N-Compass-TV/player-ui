@@ -1,9 +1,10 @@
 import { Routes } from '@angular/router';
+import { ContentSetupComponent } from '@pages/content-setup';
 import { HealthCheckComponent } from '@pages/health-check';
 import { LicenseSetupComponent } from '@pages/license-setup';
-import { ContentSetupComponent } from '@pages/content-setup';
 import { PlayComponent } from '@pages/play';
 import { ResetComponent } from '@pages/reset';
+import { ScreensaverComponent } from '@pages/screensaver';
 
 export const routes: Routes = [
     {
@@ -25,5 +26,9 @@ export const routes: Routes = [
     {
         path: 'reset',
         component: ResetComponent,
+    },
+    {
+        path: 'screensaver',
+        component: ScreensaverComponent,
     },
 ];

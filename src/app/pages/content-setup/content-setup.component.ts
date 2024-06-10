@@ -12,7 +12,7 @@ import { AssetDownloadProgress, ProgressStep } from '@interfaces/misc';
 import { Content, PlayerData } from '@interfaces/cloud';
 
 /** Constants */
-import { CONTENT_DOWNLOAD_STEPS } from '@constants';
+import { CONTENT_DOWNLOAD_STEPS, SERVER_ERROR_CODE } from '@constants';
 
 /** Services */
 import { RequestService } from '@services/request';
@@ -20,6 +20,7 @@ import { SocketService } from '@services/socket';
 
 /** Environments */
 import { API_ENDPOINTS } from '@environments';
+import { LError } from '@interfaces/local';
 
 @Component({
     selector: 'app-content-setup',
@@ -144,6 +145,11 @@ export class ContentSetupComponent implements OnInit {
             this.refetch = data.params.refetch;
         });
 
+        if (this.refetch) {
+            this.initiateRefetch();
+            return;
+        }
+
         this.getPlayerData();
     }
 
@@ -242,9 +248,20 @@ export class ContentSetupComponent implements OnInit {
                         this._router.navigate(['play']);
                     }, 5000);
                 },
-                error: (error) => {
+                error: (error: LError) => {
                     /** Handle any errors that occur during the observable chain */
                     console.error('An error occurred:', error);
+
+                    /** @todo - improve error object returned by the API */
+                    if (error && error.error && error.error.error) {
+                        const { code } = error.error.error;
+
+                        // Handle specific error codes
+                        if (code === SERVER_ERROR_CODE.player_data_failed_save) {
+                            this._router.navigate(['screensaver']);
+                            return;
+                        }
+                    }
 
                     /** Update the title to reflect the error state */
                     this.title = 'Error Occurred';
@@ -269,6 +286,29 @@ export class ContentSetupComponent implements OnInit {
         }
 
         return this.steps.find((s) => s.step === step) || { title: '', subtitle: '', step: 0 };
+    }
+
+    /**
+     * Initiates a refetch operation by making a GET request to
+     * the specified endpoint, then goes through the player data fetch.
+     * @private
+     */
+    private initiateRefetch(): void {
+        const titleSubtitle = this.getSubtitleMessage(5);
+        this.title = titleSubtitle.title;
+        this.subtitle = titleSubtitle.subtitle;
+
+        this._request.getRequest(API_ENDPOINTS.local.get.refetch).subscribe({
+            next: () => this.getPlayerData(),
+            error: (error) => {
+                /** Handle any errors that occur during the observable chain */
+                console.error('An error occurred:', error);
+
+                /** Update the title to reflect the error state */
+                this.title = 'Error Occurred';
+                this.subtitle = 'Something went wrong, please contact your administrator';
+            },
+        });
     }
 
     /** NgFor tracker

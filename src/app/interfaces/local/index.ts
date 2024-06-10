@@ -5,6 +5,7 @@
  */
 export * from './LDeviceInfo';
 export * from './LError';
+export * from './LPlayerSchedule';
 export * from './LLicenseSettings';
 export * from './LPlayerProperties';
 export * from './LPlayerZone';

@@ -141,7 +141,7 @@ export class HealthCheckComponent implements OnInit {
                 error: (error: any) => {
                     /** @todo - improve error object returned by the API */
                     if (error && error.error && error.error.error) {
-                        const { message, details, code } = error.error.error;
+                        const { code } = error.error.error;
 
                         // Handle specific error codes
                         if (code === SERVER_ERROR_CODE.no_license) {

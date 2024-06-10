@@ -10,10 +10,12 @@ import { ZoneComponent } from '@components/zone';
 import { RequestService } from '@services/request';
 
 /** Interfaces */
-import { LPlayerProperties, LPlayerZone } from '@interfaces/local';
+import { LPlayerProperties, LPlayerZone, PlayerSchedule } from '@interfaces/local';
 
 /** Environments */
 import { API_ENDPOINTS } from '@environments';
+import { SocketService } from '@services/socket';
+import { PLAYER_SERVER_SOCKET_EVENTS } from '../../constants/SocketEvents';
 
 @Component({
     selector: 'app-play',
@@ -23,6 +25,12 @@ import { API_ENDPOINTS } from '@environments';
     styleUrl: './play.component.scss',
 })
 export class PlayComponent implements OnInit {
+    /**
+     * Business operation "IS OPEN" indicator
+     * @type {boolean}
+     */
+    businessOperating: boolean = true;
+
     /**
      * Holds the license and hardware properties of the player
      */
@@ -41,10 +49,16 @@ export class PlayComponent implements OnInit {
      */
     isFullscreen: boolean = false;
 
-    constructor(private _request: RequestService) {}
+    constructor(
+        private _request: RequestService,
+        private _socket: SocketService,
+    ) {}
 
     ngOnInit(): void {
         this.initializePlaylistData();
+
+        /** Socket Player Scheduler Watcher */
+        this._socket.emitEvent(PLAYER_SERVER_SOCKET_EVENTS.start_schedule_check, {});
     }
 
     /**
@@ -67,9 +81,22 @@ export class PlayComponent implements OnInit {
                 }),
             )
             .subscribe({
-                next: () => {},
-                error: (error) => {},
+                next: () => {
+                    this.initiatePlayerScheduleChecker();
+                },
+                error: (error) => {
+                    console.error('Error initializing playlist data:', error);
+                },
             });
+    }
+
+    private initiatePlayerScheduleChecker() {
+        this._socket.schedule$.subscribe({
+            next: (data: PlayerSchedule) => {
+                console.log({ data });
+                this.businessOperating = data.operation_status;
+            },
+        });
     }
 
     /**

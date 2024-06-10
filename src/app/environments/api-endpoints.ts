@@ -1,8 +1,8 @@
 export const API_ENDPOINTS = {
     local: {
-        api: 'http://localhost:3215',
-        assets: 'http://localhost:3215/assets',
-        assets_node: 'http://localhost:3215/assets',
+        api: 'http://192.168.0.164:3215',
+        assets: 'http://192.168.0.164:3215/assets',
+        assets_node: 'http://192.168.0.164:3215/assets',
         get: {
             apps: 'player/apps',
             apply_update: 'update/apply',
