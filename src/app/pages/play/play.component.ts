@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { switchMap, tap } from 'rxjs';
+import { Subject, switchMap, takeUntil, tap } from 'rxjs';
 
 /** Components */
 import { PlaylistComponent } from '@components/playlist';
@@ -10,12 +10,13 @@ import { ZoneComponent } from '@components/zone';
 import { RequestService } from '@services/request';
 
 /** Interfaces */
-import { LPlayerProperties, LPlayerZone, PlayerSchedule } from '@interfaces/local';
+import { LPlayerProperties, LPlayerZone, LPlayerSchedule } from '@interfaces/local';
 
 /** Environments */
 import { API_ENDPOINTS } from '@environments';
 import { SocketService } from '@services/socket';
 import { PLAYER_SERVER_SOCKET_EVENTS } from '../../constants/SocketEvents';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-play',
@@ -49,12 +50,24 @@ export class PlayComponent implements OnInit {
      */
     isFullscreen: boolean = false;
 
+    /**
+     * Subject to manage unsubscription.
+     * @default new Subject<void>()
+     * @protected
+     */
+    protected _unsubscribe = new Subject<void>();
+
     constructor(
+        private _activatedRoute: ActivatedRoute,
         private _request: RequestService,
         private _socket: SocketService,
     ) {}
 
     ngOnInit(): void {
+        this._activatedRoute.queryParamMap.pipe(takeUntil(this._unsubscribe)).subscribe((data: any) => {
+            this.businessOperating = data.params.operationHours === 'true';
+        });
+
         this.initializePlaylistData();
 
         /** Socket Player Scheduler Watcher */
@@ -92,8 +105,7 @@ export class PlayComponent implements OnInit {
 
     private initiatePlayerScheduleChecker() {
         this._socket.schedule$.subscribe({
-            next: (data: PlayerSchedule) => {
-                console.log({ data });
+            next: (data: LPlayerSchedule) => {
                 this.businessOperating = data.operation_status;
             },
         });

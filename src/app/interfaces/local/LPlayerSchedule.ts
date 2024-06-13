@@ -1,4 +1,4 @@
-export type PlayerSchedule = {
+export type LPlayerSchedule = {
     timezone: any;
     operation_status: boolean;
     opening_hour: string;

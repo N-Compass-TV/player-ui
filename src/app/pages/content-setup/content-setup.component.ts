@@ -20,7 +20,7 @@ import { SocketService } from '@services/socket';
 
 /** Environments */
 import { API_ENDPOINTS } from '@environments';
-import { LError } from '@interfaces/local';
+import { LError, LPlayerSchedule } from '@interfaces/local';
 
 @Component({
     selector: 'app-content-setup',
@@ -103,7 +103,7 @@ export class ContentSetupComponent implements OnInit {
      * The number of steps in the process.
      * @default 4
      */
-    public stepCount = 4;
+    public stepCount = 5;
 
     /**
      * The subtitle displayed during the process.
@@ -142,7 +142,7 @@ export class ContentSetupComponent implements OnInit {
         this._activatedRoute.queryParamMap.pipe(takeUntil(this._unsubscribe)).subscribe((data: any) => {
             this.licenseKey = data.params.licenseKey;
             this.licenseId = data.params.licenseId;
-            this.refetch = data.params.refetch;
+            this.refetch = data.params.refetch === 'true';
         });
 
         if (this.refetch) {
@@ -228,7 +228,6 @@ export class ContentSetupComponent implements OnInit {
                 }),
 
                 /** Downloading Media Files */
-                delay(2000),
                 tap(() => {
                     const titleSubtitle = this.getSubtitleMessage(3);
                     this.title = titleSubtitle.title;
@@ -236,16 +235,24 @@ export class ContentSetupComponent implements OnInit {
                     this.readyToDownload = true;
                 }),
                 switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.download_assets)),
-            )
-            .subscribe({
-                next: () => {
+
+                /** Get Host Schedule */
+                tap(() => {
                     const titleSubtitle = this.getSubtitleMessage(4);
                     this.title = titleSubtitle.title;
                     this.subtitle = titleSubtitle.subtitle;
+                    this.readyToDownload = false;
+                }),
+                switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.schedule)),
+            )
+            .subscribe({
+                next: (data: LPlayerSchedule) => {
+                    this.title = data.operation_status ? 'Host is Open' : 'Host is Closed';
+                    this.subtitle = `${data.opening_hour} - ${data.closing_hour}`;
                     this.downloadCompleted = true;
 
                     setTimeout(() => {
-                        this._router.navigate(['play']);
+                        this._router.navigate(['play'], { queryParams: { operationHours: data.operation_status } });
                     }, 5000);
                 },
                 error: (error: LError) => {

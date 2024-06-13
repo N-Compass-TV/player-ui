@@ -18,9 +18,14 @@ export const CONTENT_DOWNLOAD_STEPS: ProgressStep[] = [
         step: 3,
     },
     {
-        title: 'All Set!',
-        subtitle: 'Assets downloaded! Playing ads shortly!',
+        title: 'Getting Host Schedule',
+        subtitle: 'Assets downloaded! Getting business hours',
         step: 4,
+    },
+    {
+        title: 'All Set!',
+        subtitle: 'Playing ads shortly!',
+        step: 5,
     },
     {
         title: 'Refetch Started',

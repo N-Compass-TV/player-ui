@@ -9,7 +9,7 @@ import { AssetDownloadProgress } from '@interfaces/misc';
 import { PlayerDetailsComponent } from '@components/player-details';
 import { PlayerDetailsDirective } from '@directives/player-details';
 import { RequestService } from '@services/request';
-import { LLicenseSettings, PlayerSchedule } from '@interfaces/local';
+import { LLicenseSettings, LPlayerSchedule } from '@interfaces/local';
 
 @Component({
     selector: 'app-root',
@@ -155,7 +155,7 @@ export class AppComponent implements OnInit {
          * Event listener for business schedule
          * Displays ads if schedule is open and a black screen if close
          */
-        this.socketClient.on(PLAYER_SERVER_SOCKET_EVENTS.schedule_check, (data: PlayerSchedule) => {
+        this.socketClient.on(PLAYER_SERVER_SOCKET_EVENTS.schedule_check, (data: LPlayerSchedule) => {
             console.log('Business hours operation schedule sent from player server');
             this._socket.onScheduleCheck(data);
         });
