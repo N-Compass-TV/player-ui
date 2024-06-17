@@ -1,4 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-screensaver',
@@ -21,10 +23,31 @@ export class ScreensaverComponent implements OnInit, OnDestroy {
     currentTime!: string;
 
     /**
+     * The message to be displayed
+     * @type {string}
+     */
+    message: string = 'Your license may be inactive, please contact your administrator';
+
+    /**
      * The timer ID used to update the time every second.
      * @type {any}
      */
     private timerId: any;
+
+    /**
+     * Subject to manage unsubscription.
+     * @default new Subject<void>()
+     * @protected
+     */
+    protected _unsubscribe = new Subject<void>();
+
+    constructor(private _activatedRoute: ActivatedRoute) {
+        this._activatedRoute.queryParamMap.pipe(takeUntil(this._unsubscribe)).subscribe((data: any) => {
+            if (data.params.error) {
+                this.message = 'Something went wrong, please contact your administrator';
+            }
+        });
+    }
 
     /**
      * Initializes the component and starts the timer to update the time every second.

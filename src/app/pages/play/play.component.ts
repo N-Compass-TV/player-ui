@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { Subject, catchError, of, switchMap, takeUntil, tap, throwError } from 'rxjs';
 
 /** Components */
 import { PlaylistComponent } from '@components/playlist';
@@ -16,7 +16,7 @@ import { LPlayerProperties, LPlayerZone, LPlayerSchedule } from '@interfaces/loc
 import { API_ENDPOINTS } from '@environments';
 import { SocketService } from '@services/socket';
 import { PLAYER_SERVER_SOCKET_EVENTS } from '../../constants/SocketEvents';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'app-play',
@@ -59,6 +59,7 @@ export class PlayComponent implements OnInit {
 
     constructor(
         private _activatedRoute: ActivatedRoute,
+        private _router: Router,
         private _request: RequestService,
         private _socket: SocketService,
     ) {}
@@ -82,23 +83,25 @@ export class PlayComponent implements OnInit {
         this._request
             .getRequest(API_ENDPOINTS.local.get.license)
             .pipe(
-                /** Player license exists */
                 tap((data: LPlayerProperties) => {
                     this.playerLicenseAndProperties = data;
                 }),
-
-                /** Get player template and zone property */
                 switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.template)),
                 tap((data: LPlayerZone[]) => {
                     this.screenZones = data;
+                }),
+                catchError((error) => {
+                    console.error('Error initializing playlist data:', error);
+                    this._router.navigate(['screensaver'], { queryParams: { error: 1 } });
+                    return throwError(() => ({
+                        message: 'Player Server Errored, sending email notification',
+                        triggerEmail: true,
+                    }));
                 }),
             )
             .subscribe({
                 next: () => {
                     this.initiatePlayerScheduleChecker();
-                },
-                error: (error) => {
-                    console.error('Error initializing playlist data:', error);
                 },
             });
     }
