@@ -139,7 +139,6 @@ export class HealthCheckComponent implements OnInit {
                     );
                 },
                 error: (_: any) => {
-                    // Update the title and subtitle to reflect the error state
                     this.title = 'Health Check Error';
                     this.subtitle = 'Something went wrong, please contact your administrator';
                 },
