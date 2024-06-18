@@ -88,51 +88,72 @@ export class HealthCheckComponent implements OnInit {
      * @returns {void}
      */
     private checkPlayerHealth(): void {
+        let checkUpdateResponse: any[] = [];
+
         this._request
             .getRequest(API_ENDPOINTS.nctv.ping, true)
             .pipe(
                 // Database Health Check
-                tap(() => (this.subtitle = this.getSubtitleMessage(1).subtitle)),
-                switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.check_db)),
+                switchMap(() => {
+                    this.subtitle = this.getSubtitleMessage(1).subtitle;
+                    return this._request.getRequest(API_ENDPOINTS.local.get.check_db);
+                }),
 
                 // Directory Check
-                tap(() => (this.subtitle = this.getSubtitleMessage(2).subtitle)),
-                switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.check_dirs)),
+                switchMap(() => {
+                    this.subtitle = this.getSubtitleMessage(2).subtitle;
+                    return this._request.getRequest(API_ENDPOINTS.local.get.check_dirs);
+                }),
 
                 // Internet Speedtest
-                tap(() => (this.subtitle = this.getSubtitleMessage(3).subtitle)),
-                switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.check_net)),
+                switchMap(() => {
+                    this.subtitle = this.getSubtitleMessage(3).subtitle;
+                    return this._request.getRequest(API_ENDPOINTS.local.get.check_net);
+                }),
 
                 // Software Update Check
-                tap(() => (this.subtitle = this.getSubtitleMessage(4).subtitle)),
-                switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.apps)),
+                switchMap(() => {
+                    this.subtitle = this.getSubtitleMessage(4).subtitle;
+                    return this._request.getRequest(API_ENDPOINTS.local.get.apps);
+                }),
                 switchMap((getAppsResponse) =>
                     this._request.postRequest(API_ENDPOINTS.local.post.apps, getAppsResponse),
                 ),
                 switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.check_update)),
+                switchMap((availableSoftwareUpdate: any[]) => {
+                    checkUpdateResponse = availableSoftwareUpdate;
+                    this.subtitle = this.getSubtitleMessage(5, false).subtitle;
+                    return this._request.postRequest(API_ENDPOINTS.local.post.save_update_log, checkUpdateResponse);
+                }),
 
                 // License Check
-                tap(() => (this.subtitle = this.getSubtitleMessage(5, false).subtitle)),
-                switchMap((checkUpdateResponse) =>
-                    this._request.postRequest(API_ENDPOINTS.local.post.save_update_log, checkUpdateResponse),
-                ),
                 switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.check_license)),
             )
             .subscribe({
-                next: (checkLicenseResponse: any) => {
-                    const licenseData: LLicenseSettings = checkLicenseResponse[0];
+                next: (availablePlayerLicense: any[]) => {
+                    const licenseData: LLicenseSettings = availablePlayerLicense[0];
+
+                    let subtitleIndex = 6;
+                    let subtitleMessageIndex = 6;
+                    let navigateToRoute = 'content-setup';
+
+                    if (checkUpdateResponse.length) {
+                        subtitleIndex = 7;
+                        subtitleMessageIndex = 7;
+                        navigateToRoute = 'software-update';
+                    } else {
+                        // Save license data to local storage
+                        localStorage.setItem('licenseData', JSON.stringify(licenseData));
+                    }
 
                     // Update display message
-                    this.title = this.getSubtitleMessage(6).title;
-                    this.subtitle = this.getSubtitleMessage(6).subtitle;
-
-                    // Save to local storage
-                    localStorage.setItem('licenseData', JSON.stringify(licenseData));
+                    this.title = this.getSubtitleMessage(subtitleIndex).title;
+                    this.subtitle = this.getSubtitleMessage(subtitleMessageIndex).subtitle;
 
                     // Redirect to asset downloader page
                     setTimeout(
                         () =>
-                            this._router.navigate(['content-setup'], {
+                            this._router.navigate([navigateToRoute], {
                                 queryParams: { licenseKey: licenseData.license_key },
                             }),
                         2000,

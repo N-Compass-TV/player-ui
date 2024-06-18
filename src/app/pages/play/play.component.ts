@@ -29,6 +29,7 @@ export class PlayComponent implements OnInit {
     /**
      * Business operation "IS OPEN" indicator
      * @type {boolean}
+     * @default true
      */
     businessOperating: boolean = true;
 
@@ -66,7 +67,9 @@ export class PlayComponent implements OnInit {
 
     ngOnInit(): void {
         this._activatedRoute.queryParamMap.pipe(takeUntil(this._unsubscribe)).subscribe((data: any) => {
-            this.businessOperating = data.params.operationHours === 'true';
+            if (data.params.operationHours) {
+                this.businessOperating = data.params.operationHours === 'true';
+            }
         });
 
         this.initializePlaylistData();

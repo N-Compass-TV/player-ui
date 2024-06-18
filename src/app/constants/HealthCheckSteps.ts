@@ -32,4 +32,9 @@ export const HEALTH_CHECK_STEPS: ProgressStep[] = [
         subtitle: 'Preparing ads and schedules',
         step: 6,
     },
+    {
+        title: 'Updates are available',
+        subtitle: 'Applying updates in a few',
+        step: 7,
+    },
 ];

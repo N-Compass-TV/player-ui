@@ -5,6 +5,7 @@ import { LicenseSetupComponent } from '@pages/license-setup';
 import { PlayComponent } from '@pages/play';
 import { ResetComponent } from '@pages/reset';
 import { ScreensaverComponent } from '@pages/screensaver';
+import { SoftwareUpdateComponent } from '@pages/software-update';
 
 export const routes: Routes = [
     {
@@ -30,5 +31,9 @@ export const routes: Routes = [
     {
         path: 'screensaver',
         component: ScreensaverComponent,
+    },
+    {
+        path: 'software-update',
+        component: SoftwareUpdateComponent,
     },
 ];
