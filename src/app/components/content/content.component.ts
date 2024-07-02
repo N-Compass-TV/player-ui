@@ -83,12 +83,16 @@ export class ContentComponent implements OnInit {
 
         // Set the duration of live stream content to 1ms for the ticker process
         if (this.isLiveStream) {
-            this.playlistContent.duration = 1;
+            this.playlistContent.duration = 100;
         }
 
         // Run ticker only if the playlist content is NOT a video
         if (!videoPipe.transform(this.playlistContent.file_type)) {
             this.startTicker();
+        }
+
+        if (!this.isFeed) {
+            this.playlistContent.url = `${API_ENDPOINTS.local.assets}/${this.playlistContent.file_name}`;
         }
     }
 
@@ -110,14 +114,17 @@ export class ContentComponent implements OnInit {
         // Return if playlist content is null or if ticker is not activated (no contents)
         if (!this.playlistContent || !this.activateTicker) return;
 
-        setTimeout(() => {
-            // Restart startTicker() if content is a livestream and is within scheduled time
-            if (this.isLiveStream && this.isWithinSchedule) {
-                this.startTicker();
-                return;
-            }
-            this.contentEnded();
-        }, this.playlistContent.duration * 1000);
+        setTimeout(
+            () => {
+                // Restart startTicker() if content is a livestream and is within scheduled time
+                if (this.isLiveStream && this.isWithinSchedule) {
+                    this.startTicker();
+                    return;
+                }
+                this.contentEnded();
+            },
+            this.playlistContent.duration ? this.playlistContent.duration * 1000 : 20000,
+        );
     }
 
     /**

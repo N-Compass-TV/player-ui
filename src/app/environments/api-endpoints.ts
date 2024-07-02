@@ -1,7 +1,7 @@
 export const API_ENDPOINTS = {
     local: {
         api: 'http://localhost:3215',
-        assets: 'http://localhost:3215/assets',
+        assets: 'http://localhost/assets',
         assets_node: 'http://localhost:3215/assets',
         get: {
             apps: 'player/apps',
