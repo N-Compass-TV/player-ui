@@ -10,3 +10,4 @@ export * from './LLicenseSettings';
 export * from './LPlayerProperties';
 export * from './LPlayerZone';
 export * from './LPlaylistData';
+export * from './LProgrammatic';

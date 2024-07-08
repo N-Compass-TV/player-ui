@@ -18,18 +18,23 @@ export const CONTENT_DOWNLOAD_STEPS: ProgressStep[] = [
         step: 3,
     },
     {
+        title: 'Setting up Programmatic',
+        subtitle: 'Downloading programmatic data and contents',
+        step: 4,
+    },
+    {
         title: 'Getting Host Schedule',
         subtitle: 'Assets downloaded! Getting business hours',
-        step: 4,
+        step: 5,
     },
     {
         title: 'All Set!',
         subtitle: 'Playing ads shortly!',
-        step: 5,
+        step: 6,
     },
     {
         title: 'Refetch Started',
         subtitle: 'Redownloading player data and assets',
-        step: 5,
+        step: 7,
     },
 ];

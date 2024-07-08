@@ -91,7 +91,7 @@ export class ContentComponent implements OnInit {
             this.startTicker();
         }
 
-        if (!this.isFeed) {
+        if (!this.isFeed && !this.playlistContent.programmatic_source) {
             this.playlistContent.url = `${API_ENDPOINTS.local.assets}/${this.playlistContent.file_name}`;
         }
     }
@@ -133,7 +133,7 @@ export class ContentComponent implements OnInit {
      * @returns {void}
      */
     public contentEnded(): void {
-        this.hitPlayCount(this.playlistContent.playlist_content_id);
+        this.hitPlayCount(this.playlistContent.playlist_content_id || this.playlistContent.proof_of_play);
         this.displayEnded.emit(this.playlistContent);
     }
 
@@ -143,8 +143,14 @@ export class ContentComponent implements OnInit {
      * @returns {void}
      * @private
      */
-    private hitPlayCount(playlistContentId: string): void {
-        const url = `${API_ENDPOINTS.local.get.log}/${playlistContentId}`;
+    private hitPlayCount(id: string): void {
+        if (this.playlistContent.programmatic_source) {
+            const url = `${API_ENDPOINTS.local.get.programmatic_played}/${id}`;
+            this._request.getRequest(url).pipe(take(1)).subscribe();
+            return;
+        }
+
+        const url = `${API_ENDPOINTS.local.get.log}/${id}`;
         this._request.getRequest(url).pipe(take(1)).subscribe();
     }
 

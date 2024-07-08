@@ -19,14 +19,18 @@ export class HttpErrorInterceptor implements HttpInterceptor {
                 }
 
                 // Handle specific error codes
-                if (error.error && error.error.code) {
-                    switch (error.error.code) {
+                if (this.extractError(error)) {
+                    const err = this.extractError(error);
+
+                    switch (err.code) {
                         case SERVER_ERROR_CODE.no_license:
                             this._router.navigate(['license-setup']);
                             return throwError(() => new Error('No license found.'));
                         case SERVER_ERROR_CODE.player_data_failed_save:
                             this._router.navigate(['screensaver']);
                             return throwError(() => new Error('Failed to save player data.'));
+                        case SERVER_ERROR_CODE.player_apps_fail:
+                            return throwError(() => new Error('Failed to get player apps'));
                     }
                 }
 
@@ -44,5 +48,13 @@ export class HttpErrorInterceptor implements HttpInterceptor {
          * recipient should only be the TechSupport emai
          */
         console.log('Email Sent');
+    }
+
+    /**
+     * Error object extractor
+     * @param error
+     */
+    private extractError(error: any): any {
+        return error.error?.error ?? error.error ?? error;
     }
 }

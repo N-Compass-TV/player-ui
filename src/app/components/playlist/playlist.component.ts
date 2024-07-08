@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { catchError, map, of, switchMap, take } from 'rxjs';
 
 /** Components */
 import { ContentComponent } from '@components/content';
@@ -12,7 +13,8 @@ import { HelperService } from '@services/helper';
 import { API_ENDPOINTS } from '@environments';
 
 /** Interfaces */
-import { LPlaylistData } from '@interfaces/local';
+import { LPlaylistData, LProgrammaticAd, LProgrammaticAdsResponse } from '@interfaces/local';
+import { PLAY_TYPE } from '@constants';
 
 @Component({
     selector: 'app-playlist',
@@ -28,6 +30,13 @@ export class PlaylistComponent implements OnInit {
      * @default ''
      */
     @Input() playlistId: string = '';
+
+    /**
+     * Programmatic ads to be diplayed
+     * @type {LProgrammaticAds[]}
+     * @default []
+     */
+    @Input() programmaticAds: LProgrammaticAd[] = [];
 
     /**
      * Emits the playlist content is_fullscreen value
@@ -58,6 +67,13 @@ export class PlaylistComponent implements OnInit {
     private playlist: LPlaylistData[] = [];
 
     /**
+     * Indicates if the playlist cycle has completed
+     * @type {boolean}
+     * @default false
+     */
+    playlistCompleted: boolean = false;
+
+    /**
      * Set the ticker's activate status
      * @type {boolean}
      * @default true
@@ -79,19 +95,71 @@ export class PlaylistComponent implements OnInit {
      * @private
      * @returns {void}
      */
-    private getPlaylistData(): void {
+    private getPlaylistData(update: boolean = false): void {
         if (!this.playlistId) return;
 
-        this._request.getRequest(`${API_ENDPOINTS.local.get.playlist}${this.playlistId}`).subscribe({
-            next: (playlist: LPlaylistData[]) => {
-                this.playlist = playlist.sort((a, b) => a.sequence - b.sequence);
-                this.tickerActivated = playlist.length > 1;
-                this.playAd();
-            },
-            error: (error) => {
-                console.error({ error });
-            },
-        });
+        this._request
+            .getRequest(`${API_ENDPOINTS.local.get.playlist}${this.playlistId}`)
+            .pipe(
+                switchMap((playlist: LPlaylistData[]) =>
+                    this._request.getRequest(API_ENDPOINTS.local.get.programmatic_ads).pipe(
+                        map((ads: LProgrammaticAdsResponse) => {
+                            // Map programmatic ads to LPlaylistData format
+                            const mappedAds: LPlaylistData[] = ads.data.map((ad, index) => ({
+                                playlist_id: null,
+                                playlist_content_id: null,
+                                programmatic_ad_id: ad.id,
+                                programmatic_source: ad.creative_source,
+                                content_id: ad.id,
+                                file_name: ad.creative_name,
+                                url: ad.creative_url,
+                                file_type: ad.creative_type,
+                                handler_id: null,
+                                sequence: playlist.length + index,
+                                is_fullscreen: 0,
+                                duration: ad.duration,
+                                title: ad.creative_name,
+                                play_type: PLAY_TYPE.default,
+                                alternate_week: null,
+                                date_from: null,
+                                date_to: null,
+                                play_days: null,
+                                play_time_start: null,
+                                play_time_end: null,
+                                proof_of_play: ad.proof_of_play,
+                                credits: null,
+                                credit_count: null,
+                                schedule_status: null,
+                                schedule_status_sent: null,
+                                classification: null,
+                            }));
+
+                            // Return the playlist and the mapped ads separately
+                            return { playlist, mappedAds };
+                        }),
+                        catchError((error) => {
+                            console.error('Error fetching programmatic ads:', error);
+                            return of({ playlist, mappedAds: [] }); // Continue with the original playlist if ads fetch fails
+                        }),
+                    ),
+                ),
+            )
+            .subscribe({
+                next: ({ playlist, mappedAds }: { playlist: LPlaylistData[]; mappedAds: LPlaylistData[] }) => {
+                    // Sort only the internal playlist
+                    const sortedPlaylist = playlist.sort((a, b) => a.sequence - b.sequence);
+
+                    // Concatenate the sorted playlist with the mapped ads
+                    this.playlist = [...sortedPlaylist, ...mappedAds];
+
+                    // Play ads
+                    this.tickerActivated = this.playlist.length > 1;
+                    if (!update) this.playAd();
+                },
+                error: (error) => {
+                    console.error({ error });
+                },
+            });
     }
 
     /**
@@ -135,11 +203,13 @@ export class PlaylistComponent implements OnInit {
      */
     private playAd(): void {
         if (this.playlist.length === 0) {
-            console.warn('Playlist is empty.');
+            console.warn('Playlist is empty!');
             return;
         }
 
-        let initialSequence = this.currentSequence;
+        let initialSequence = 0;
+        let hasCycled = false;
+
         do {
             if (this._helper.canPlayContent(this.playlist[this.currentSequence])) {
                 this.currentPlaylistContent = this.playlist[this.currentSequence];
@@ -147,14 +217,34 @@ export class PlaylistComponent implements OnInit {
                 return;
             }
 
-            /**
-             * This ensures that the sequence number always stays within the valid range
-             * of indices for the playlist array, effectively cycling through the playlist
-             * items repeatedly.
-             */
-            this.currentSequence = (this.currentSequence + 1) % this.playlist.length;
+            this.currentSequence = this.currentSequence + 1;
+
+            if (this.currentSequence >= this.playlist.length) {
+                this.currentSequence = 0;
+                hasCycled = true;
+            }
         } while (this.currentSequence !== initialSequence);
 
-        console.warn('No playable content found in the playlist.');
+        /** Playlist has completed, trigger a programmatic ad request */
+        if (hasCycled) this.triggerProgrammaticAdRequest();
+
+        // Reset sequence and play
+        this.currentSequence = 0;
+        this.playAd();
+    }
+
+    /**
+     * Trigger ad request from programmatic vendors
+     * to renew programmatic ads data
+     */
+    private triggerProgrammaticAdRequest(): void {
+        this._request
+            .getRequest(API_ENDPOINTS.local.get.programmatic_adrequest)
+            .pipe(take(1))
+            .subscribe({
+                next: () => {
+                    this.getPlaylistData(true);
+                },
+            });
     }
 }

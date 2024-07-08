@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Subject, catchError, of, switchMap, takeUntil, tap, throwError } from 'rxjs';
+import { Subject, catchError, switchMap, takeUntil, tap, throwError } from 'rxjs';
 
 /** Components */
 import { PlaylistComponent } from '@components/playlist';
@@ -10,7 +10,13 @@ import { ZoneComponent } from '@components/zone';
 import { RequestService } from '@services/request';
 
 /** Interfaces */
-import { LPlayerProperties, LPlayerZone, LPlayerSchedule } from '@interfaces/local';
+import {
+    LPlayerProperties,
+    LPlayerZone,
+    LPlayerSchedule,
+    LProgrammaticAdsResponse,
+    LProgrammaticAd,
+} from '@interfaces/local';
 
 /** Environments */
 import { API_ENDPOINTS } from '@environments';
@@ -37,6 +43,11 @@ export class PlayComponent implements OnInit {
      * Holds the license and hardware properties of the player
      */
     playerLicenseAndProperties!: LPlayerProperties;
+
+    /**
+     * Programmatic ads
+     */
+    programmaticAds!: LProgrammaticAd[];
 
     /**
      * Holds the player screen and zone properties
@@ -89,10 +100,20 @@ export class PlayComponent implements OnInit {
                 tap((data: LPlayerProperties) => {
                     this.playerLicenseAndProperties = data;
                 }),
+
+                /** Get player template */
                 switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.template)),
                 tap((data: LPlayerZone[]) => {
                     this.screenZones = data;
                 }),
+
+                /** Get programmatic ads */
+                switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.programmatic_ads)),
+                tap((data: LProgrammaticAdsResponse) => {
+                    this.programmaticAds = data.data;
+                }),
+
+                /** Custom error catcher  */
                 catchError((error) => {
                     console.error('Error initializing playlist data:', error);
                     this._router.navigate(['screensaver'], { queryParams: { error: 1 } });
@@ -109,6 +130,10 @@ export class PlayComponent implements OnInit {
             });
     }
 
+    /**
+     * Initializes socket observable for player schedule
+     * @returns {void}
+     */
     private initiatePlayerScheduleChecker() {
         this._socket.schedule$.subscribe({
             next: (data: LPlayerSchedule) => {

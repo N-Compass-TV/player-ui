@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, delay, switchMap, takeUntil, tap } from 'rxjs';
+import { Subject, switchMap, takeUntil, tap } from 'rxjs';
 
 /** Components */
 import { AnimatedLoaderComponent } from '@components/animated-loader';
@@ -236,9 +236,18 @@ export class ContentSetupComponent implements OnInit {
                 }),
                 switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.download_assets)),
 
-                /** Get Host Schedule */
+                /** Setup Programmatic */
                 tap(() => {
                     const titleSubtitle = this.getSubtitleMessage(4);
+                    this.title = titleSubtitle.title;
+                    this.subtitle = titleSubtitle.subtitle;
+                    this.readyToDownload = true;
+                }),
+                switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.programmatic_adrequest)),
+
+                /** Get Host Schedule */
+                tap(() => {
+                    const titleSubtitle = this.getSubtitleMessage(5);
                     this.title = titleSubtitle.title;
                     this.subtitle = titleSubtitle.subtitle;
                     this.readyToDownload = false;
@@ -246,7 +255,7 @@ export class ContentSetupComponent implements OnInit {
                 switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.schedule)),
             )
             .subscribe({
-                next: (data: LPlayerSchedule) => {
+                next: (data: LPlayerSchedule | any) => {
                     this.title = data.operation_status ? 'Host is Open' : 'Host is Closed';
                     this.subtitle = `${data.opening_hour} - ${data.closing_hour}`;
                     this.downloadCompleted = true;
@@ -304,7 +313,6 @@ export class ContentSetupComponent implements OnInit {
         const titleSubtitle = this.getSubtitleMessage(5);
         this.title = titleSubtitle.title;
         this.subtitle = titleSubtitle.subtitle;
-
         this._request.getRequest(API_ENDPOINTS.local.get.refetch).subscribe({
             next: () => this.getPlayerData(),
             error: (error) => {
