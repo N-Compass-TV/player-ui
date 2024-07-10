@@ -13,7 +13,7 @@ export type ImageTypes =
     | 'image/jpeg';
 
 /** Allowed Video Types */
-export type VideoTypes = 'MP4' | 'WEBM' | 'mp4' | 'webm';
+export type VideoTypes = 'MP4' | 'WEBM' | 'mp4' | 'webm' | 'video/mp4' | 'video/webm';
 
 /** Allowed Feed Types */
 export type FeedTypes = 'feed';

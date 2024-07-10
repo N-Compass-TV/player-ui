@@ -25,6 +25,11 @@ import { PLAY_TYPE } from '@constants';
 })
 export class PlaylistComponent implements OnInit {
     /**
+     * Indicates that the zone holding this playlist is a main zone
+     */
+    @Input() isMainzone: boolean = false;
+
+    /**
      * Playlist ID to be used to fetch playlist data.
      * @type {string}
      * @default ''
@@ -67,13 +72,6 @@ export class PlaylistComponent implements OnInit {
     private playlist: LPlaylistData[] = [];
 
     /**
-     * Indicates if the playlist cycle has completed
-     * @type {boolean}
-     * @default false
-     */
-    playlistCompleted: boolean = false;
-
-    /**
      * Set the ticker's activate status
      * @type {boolean}
      * @default true
@@ -101,48 +99,52 @@ export class PlaylistComponent implements OnInit {
         this._request
             .getRequest(`${API_ENDPOINTS.local.get.playlist}${this.playlistId}`)
             .pipe(
-                switchMap((playlist: LPlaylistData[]) =>
-                    this._request.getRequest(API_ENDPOINTS.local.get.programmatic_ads).pipe(
-                        map((ads: LProgrammaticAdsResponse) => {
-                            // Map programmatic ads to LPlaylistData format
-                            const mappedAds: LPlaylistData[] = ads.data.map((ad, index) => ({
-                                playlist_id: null,
-                                playlist_content_id: null,
-                                programmatic_ad_id: ad.id,
-                                programmatic_source: ad.creative_source,
-                                content_id: ad.id,
-                                file_name: ad.creative_name,
-                                url: ad.creative_url,
-                                file_type: ad.creative_type,
-                                handler_id: null,
-                                sequence: playlist.length + index,
-                                is_fullscreen: 0,
-                                duration: ad.duration,
-                                title: ad.creative_name,
-                                play_type: PLAY_TYPE.default,
-                                alternate_week: null,
-                                date_from: null,
-                                date_to: null,
-                                play_days: null,
-                                play_time_start: null,
-                                play_time_end: null,
-                                proof_of_play: ad.proof_of_play,
-                                credits: null,
-                                credit_count: null,
-                                schedule_status: null,
-                                schedule_status_sent: null,
-                                classification: null,
-                            }));
+                switchMap((playlist: LPlaylistData[]) => {
+                    if (this.isMainzone) {
+                        return this._request.getRequest(API_ENDPOINTS.local.get.programmatic_ads).pipe(
+                            map((ads: LProgrammaticAdsResponse) => {
+                                // Map programmatic ads to LPlaylistData format
+                                const mappedAds: LPlaylistData[] = ads.data.map((ad, index) => ({
+                                    playlist_id: null,
+                                    playlist_content_id: null,
+                                    programmatic_ad_id: ad.id,
+                                    programmatic_source: ad.creative_source,
+                                    content_id: ad.id,
+                                    file_name: ad.creative_name,
+                                    url: ad.creative_url,
+                                    file_type: ad.creative_type,
+                                    handler_id: null,
+                                    sequence: playlist.length + index,
+                                    is_fullscreen: 1,
+                                    duration: ad.duration,
+                                    title: ad.creative_name,
+                                    play_type: PLAY_TYPE.default,
+                                    alternate_week: null,
+                                    date_from: null,
+                                    date_to: null,
+                                    play_days: null,
+                                    play_time_start: null,
+                                    play_time_end: null,
+                                    proof_of_play: ad.proof_of_play,
+                                    credits: null,
+                                    credit_count: null,
+                                    schedule_status: null,
+                                    schedule_status_sent: null,
+                                    classification: null,
+                                }));
 
-                            // Return the playlist and the mapped ads separately
-                            return { playlist, mappedAds };
-                        }),
-                        catchError((error) => {
-                            console.error('Error fetching programmatic ads:', error);
-                            return of({ playlist, mappedAds: [] }); // Continue with the original playlist if ads fetch fails
-                        }),
-                    ),
-                ),
+                                // Return the playlist and the mapped ads separately
+                                return { playlist, mappedAds };
+                            }),
+                            catchError((error) => {
+                                console.error('Error fetching programmatic ads:', error);
+                                return of({ playlist, mappedAds: [] }); // Continue with the original playlist if ads fetch fails
+                            }),
+                        );
+                    } else {
+                        return of({ playlist, mappedAds: [] }); // If not mainzone, return only the playlist
+                    }
+                }),
             )
             .subscribe({
                 next: ({ playlist, mappedAds }: { playlist: LPlaylistData[]; mappedAds: LPlaylistData[] }) => {
@@ -207,10 +209,9 @@ export class PlaylistComponent implements OnInit {
             return;
         }
 
-        let initialSequence = 0;
-        let hasCycled = false;
-
         do {
+            if (!this.playlist[this.currentSequence]) break;
+
             if (this._helper.canPlayContent(this.playlist[this.currentSequence])) {
                 this.currentPlaylistContent = this.playlist[this.currentSequence];
                 this.onDisplayModeChecked.emit(this.currentPlaylistContent.is_fullscreen);
@@ -218,18 +219,11 @@ export class PlaylistComponent implements OnInit {
             }
 
             this.currentSequence = this.currentSequence + 1;
+        } while (this.currentSequence < this.playlist.length);
 
-            if (this.currentSequence >= this.playlist.length) {
-                this.currentSequence = 0;
-                hasCycled = true;
-            }
-        } while (this.currentSequence !== initialSequence);
-
-        /** Playlist has completed, trigger a programmatic ad request */
-        if (hasCycled) this.triggerProgrammaticAdRequest();
-
-        // Reset sequence and play
+        // Reset sequence, trigger programmatic and reset play
         this.currentSequence = 0;
+        if (this.isMainzone) this.triggerProgrammaticAdRequest();
         this.playAd();
     }
 
