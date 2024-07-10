@@ -3,7 +3,7 @@
         <app-zone *ngFor="let zone of screenZones" [zoneData]="zone" [isFullscreen]="isFullscreen">
             <app-playlist
                 [playlistId]="zone.playlist_id"
-                [isMainzone]="zone.zone_order === 1"
+                [isMainzone]="zone.zone_order === 1 || screenZones.length === 1"
                 (onDisplayModeChecked)="setDisplayMode($event, zone.zone_order)"></app-playlist>
         </app-zone>
     </ng-container>
