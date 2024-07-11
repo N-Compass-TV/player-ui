@@ -250,7 +250,9 @@ export class ContentSetupComponent implements OnInit {
                     const titleSubtitle = this.getSubtitleMessage(5);
                     this.title = titleSubtitle.title;
                     this.subtitle = titleSubtitle.subtitle;
-                    this.readyToDownload = false;
+                    setTimeout(() => {
+                        this.readyToDownload = false;
+                    }, 2000);
                 }),
                 switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.schedule)),
             )

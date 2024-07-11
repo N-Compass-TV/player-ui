@@ -91,7 +91,7 @@ export class ContentComponent implements OnInit {
             this.startTicker();
         }
 
-        if (!this.isFeed && !this.playlistContent.programmatic_source) {
+        if (!this.isFeed) {
             this.playlistContent.url = `${API_ENDPOINTS.local.assets}/${this.playlistContent.file_name}`;
         }
     }

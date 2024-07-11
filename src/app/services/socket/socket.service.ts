@@ -42,7 +42,7 @@ export class SocketService {
      * Observable to subscribe to player schedule events
      * @type {Observable<any>}
      */
-    schedule$ = this.downloaded.asObservable();
+    schedule$ = this.schedule.asObservable();
 
     constructor() {}
 
