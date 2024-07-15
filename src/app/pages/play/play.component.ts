@@ -84,9 +84,6 @@ export class PlayComponent implements OnInit {
         });
 
         this.initializePlaylistData();
-
-        /** Socket Player Scheduler Watcher */
-        this._socket.emitEvent(PLAYER_SERVER_SOCKET_EVENTS.start_schedule_check, {});
     }
 
     /**

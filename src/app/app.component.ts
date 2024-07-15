@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import io from 'socket.io-client';
@@ -43,7 +43,6 @@ export class AppComponent implements OnInit {
         private _request: RequestService,
         private _router: Router,
         private _socket: SocketService,
-        private ngZone: NgZone,
     ) {
         this.connectToSocket();
     }
@@ -102,9 +101,7 @@ export class AppComponent implements OnInit {
          * @param {AssetDownloadProgress} data - The data related to the asset download progress.
          */
         this.socketClient.on(PLAYER_SERVER_SOCKET_EVENTS.fileDownloaded, (data: AssetDownloadProgress) => {
-            this.ngZone.runOutsideAngular(() => {
-                this.handleFileDownloaded(data);
-            });
+            this.handleFileDownloaded(data);
         });
 
         /**
@@ -156,7 +153,7 @@ export class AppComponent implements OnInit {
          * Displays ads if schedule is open and a black screen if close
          */
         this.socketClient.on(PLAYER_SERVER_SOCKET_EVENTS.schedule_check, (data: LPlayerSchedule) => {
-            console.log('Business hours operation schedule sent from player server');
+            console.log('Business hours operation schedule sent from player server:', data);
             this._socket.onScheduleCheck(data);
         });
     }
@@ -180,9 +177,7 @@ export class AppComponent implements OnInit {
      * @private
      */
     private handleFileDownloaded(data: AssetDownloadProgress): void {
-        this.ngZone.run(() => {
-            this._socket.assetDownloaded(data);
-        });
+        this._socket.assetDownloaded(data);
     }
 
     /**
