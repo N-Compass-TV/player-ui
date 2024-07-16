@@ -17,6 +17,7 @@ import { RequestService } from '@services/request';
 
 /** Environments */
 import { API_ENDPOINTS } from '@environments';
+import { PROGRAMMATIC } from '@constants';
 
 @Component({
     selector: 'app-content',
@@ -144,7 +145,7 @@ export class ContentComponent implements OnInit {
      * @private
      */
     private hitPlayCount(id: string): void {
-        if (this.playlistContent.programmatic_source) {
+        if (this.playlistContent.programmatic_source === PROGRAMMATIC.pxchange) {
             const url = `${API_ENDPOINTS.local.get.programmatic_played}/${id}`;
             this._request.getRequest(url).pipe(take(1)).subscribe();
             return;
