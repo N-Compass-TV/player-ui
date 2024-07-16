@@ -131,6 +131,7 @@ export class PlaylistComponent implements OnInit {
                                     schedule_status: null,
                                     schedule_status_sent: null,
                                     classification: null,
+                                    played: ad.played,
                                 }));
 
                                 // Return the playlist and the mapped ads separately
@@ -153,6 +154,8 @@ export class PlaylistComponent implements OnInit {
 
                     // Concatenate the sorted playlist with the mapped ads
                     this.playlist = [...sortedPlaylist, ...mappedAds];
+
+                    console.log('==>', this.playlist);
 
                     // Play ads
                     this.tickerActivated = this.playlist.length > 1;

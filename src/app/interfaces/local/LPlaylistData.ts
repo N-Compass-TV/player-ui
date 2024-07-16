@@ -26,4 +26,5 @@ export interface LPlaylistData {
     sequence: any;
     title: any;
     url: any;
+    played: any;
 }

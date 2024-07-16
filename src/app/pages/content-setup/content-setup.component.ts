@@ -162,6 +162,8 @@ export class ContentSetupComponent implements OnInit {
     private assetDownloadWatch(): void {
         this._socket.downloaded$.subscribe({
             next: (data: AssetDownloadProgress) => {
+                if (!this.playerAssets.find((asset) => asset.contentId === data.content_id)) return;
+
                 this.playerAssets.find((asset) => asset.contentId === data.content_id)!.progressWidthTracker = Number(
                     data.progress,
                 );
