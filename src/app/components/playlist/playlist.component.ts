@@ -65,8 +65,15 @@ export class PlaylistComponent implements OnInit {
     public currentSequence: number = 0;
 
     /**
+     * The current vendor content sequence tracker but starts with 1
+     * @type {number}
+     * @default 1
+     */
+    public currentVendorSequence: number = 1;
+
+    /**
      * Array of playlist items.
-     * @type {PlaylistData[]}
+     * @type {LPlaylistData[]}
      * @default []
      */
     private playlist: LPlaylistData[] = [];
@@ -78,6 +85,25 @@ export class PlaylistComponent implements OnInit {
      */
     public tickerActivated: boolean = true;
 
+    /**
+     * Array of vendor ads mapped into playlist data.
+     * @type {LPlaylistData[]}
+     * @default []
+     */
+    private vendorAds: LPlaylistData[] = [];
+
+    /**
+     * The sequence assigned for the vendor ad
+     * @type {number}
+     * @default 4 - means programmatic ads will play at every after 4th sequence in the playlist
+     * See sample below:
+     * p - playlist
+     * v - vendor
+     * p p p p v p p p p v p p p p v
+     * p p p p v p p p p v p p p p v
+     */
+    private vendorAdPlayPosition: number = 4;
+
     constructor(
         private _helper: HelperService,
         private _request: RequestService,
@@ -85,6 +111,7 @@ export class PlaylistComponent implements OnInit {
 
     ngOnInit(): void {
         this.getPlaylistData();
+        this.getProgrammaticAds();
     }
 
     /**
@@ -96,75 +123,64 @@ export class PlaylistComponent implements OnInit {
     private getPlaylistData(update: boolean = false): void {
         if (!this.playlistId) return;
 
-        this._request
-            .getRequest(`${API_ENDPOINTS.local.get.playlist}${this.playlistId}`)
-            .pipe(
-                switchMap((playlist: LPlaylistData[]) => {
-                    if (this.isMainzone) {
-                        return this._request.getRequest(API_ENDPOINTS.local.get.programmatic_ads).pipe(
-                            map((ads: LProgrammaticAdsResponse) => {
-                                // Map programmatic ads to LPlaylistData format
-                                const mappedAds: LPlaylistData[] = ads.data.map((ad, index) => ({
-                                    playlist_id: null,
-                                    playlist_content_id: null,
-                                    programmatic_ad_id: ad.id,
-                                    programmatic_source: ad.creative_source,
-                                    content_id: ad.id,
-                                    file_name: ad.creative_name,
-                                    url: ad.creative_url,
-                                    file_type: ad.creative_type,
-                                    handler_id: null,
-                                    sequence: playlist.length + index,
-                                    is_fullscreen: 1,
-                                    duration: ad.duration,
-                                    title: ad.creative_name,
-                                    play_type: PLAY_TYPE.default,
-                                    alternate_week: null,
-                                    date_from: null,
-                                    date_to: null,
-                                    play_days: null,
-                                    play_time_start: null,
-                                    play_time_end: null,
-                                    proof_of_play: ad.proof_of_play,
-                                    credits: null,
-                                    credit_count: null,
-                                    schedule_status: null,
-                                    schedule_status_sent: null,
-                                    classification: null,
-                                    played: ad.played,
-                                }));
+        this._request.getRequest(`${API_ENDPOINTS.local.get.playlist}${this.playlistId}`).subscribe({
+            next: (playlist: LPlaylistData[]) => {
+                // Sort only the internal playlist
+                const sortedPlaylist = playlist.sort((a, b) => a.sequence - b.sequence);
 
-                                // Return the playlist and the mapped ads separately
-                                return { playlist, mappedAds };
-                            }),
-                            catchError((error) => {
-                                console.error('Error fetching programmatic ads:', error);
-                                return of({ playlist, mappedAds: [] }); // Continue with the original playlist if ads fetch fails
-                            }),
-                        );
-                    } else {
-                        return of({ playlist, mappedAds: [] }); // If not mainzone, return only the playlist
-                    }
-                }),
-            )
-            .subscribe({
-                next: ({ playlist, mappedAds }: { playlist: LPlaylistData[]; mappedAds: LPlaylistData[] }) => {
-                    // Sort only the internal playlist
-                    const sortedPlaylist = playlist.sort((a, b) => a.sequence - b.sequence);
+                // Concatenate the sorted playlist with the mapped ads
+                this.playlist = [...sortedPlaylist];
 
-                    // Concatenate the sorted playlist with the mapped ads
-                    this.playlist = [...sortedPlaylist, ...mappedAds];
+                // Play ads
+                this.tickerActivated = this.playlist.length > 1;
+                if (!update) this.playAd();
+            },
+            error: (error) => {
+                console.error({ error });
+            },
+        });
+    }
 
-                    console.log('==>', this.playlist);
+    private getProgrammaticAds() {
+        this._request.getRequest(API_ENDPOINTS.local.get.programmatic_ads).subscribe({
+            next: (ads: LProgrammaticAdsResponse) => {
+                this.vendorAds = [
+                    ...ads.data.map((ad, index) => ({
+                        playlist_id: null,
+                        playlist_content_id: null,
+                        programmatic_ad_id: ad.id,
+                        programmatic_source: ad.creative_source,
+                        content_id: ad.id,
+                        file_name: ad.creative_name,
+                        url: ad.creative_url,
+                        file_type: ad.creative_type,
+                        handler_id: null,
+                        sequence: index,
+                        is_fullscreen: 1,
+                        duration: ad.duration,
+                        title: ad.creative_name,
+                        play_type: PLAY_TYPE.default,
+                        alternate_week: null,
+                        date_from: null,
+                        date_to: null,
+                        play_days: null,
+                        play_time_start: null,
+                        play_time_end: null,
+                        proof_of_play: ad.proof_of_play,
+                        credits: null,
+                        credit_count: null,
+                        schedule_status: null,
+                        schedule_status_sent: null,
+                        classification: null,
+                        played: ad.played,
+                    })),
+                ];
 
-                    // Play ads
-                    this.tickerActivated = this.playlist.length > 1;
-                    if (!update) this.playAd();
-                },
-                error: (error) => {
-                    console.error({ error });
-                },
-            });
+                if (this.playlist.length < this.vendorAdPlayPosition) {
+                    this.playlist = [...this.playlist, ...this.vendorAds];
+                }
+            },
+        });
     }
 
     /**
@@ -177,6 +193,7 @@ export class PlaylistComponent implements OnInit {
      */
     public onContentRenderError(e: any): void {
         this.currentSequence += 1;
+        if (!this.playlist[this.currentSequence].programmatic_source) this.currentVendorSequence += 1;
         this.currentPlaylistContent = null;
 
         setTimeout(() => {
@@ -192,6 +209,7 @@ export class PlaylistComponent implements OnInit {
      */
     public onDisplayEnded(): void {
         this.currentSequence += 1;
+        if (!this.playlist[this.currentSequence].programmatic_source) this.currentVendorSequence += 1;
         this.currentPlaylistContent = null;
 
         setTimeout(() => {
@@ -212,6 +230,17 @@ export class PlaylistComponent implements OnInit {
             return;
         }
 
+        console.log(this.currentVendorSequence, this.currentSequence);
+
+        if ((this.currentVendorSequence - 1) % this.vendorAdPlayPosition === 0 && this.vendorAds.length) {
+            const vendorAd = this.vendorAds[0];
+            this.currentPlaylistContent = vendorAd;
+            this.onDisplayModeChecked.emit(vendorAd.is_fullscreen);
+            this.triggerProgrammaticAdRequest();
+            this.currentSequence = this.currentSequence - 1;
+            return;
+        }
+
         do {
             if (!this.playlist[this.currentSequence]) break;
 
@@ -229,7 +258,8 @@ export class PlaylistComponent implements OnInit {
                 return;
             }
 
-            this.currentSequence = this.currentSequence + 1;
+            this.currentSequence += 1;
+            if (!this.playlist[this.currentSequence].programmatic_source) this.currentVendorSequence += 1;
         } while (this.currentSequence < this.playlist.length);
 
         /**
@@ -263,7 +293,7 @@ export class PlaylistComponent implements OnInit {
             .getRequest(API_ENDPOINTS.local.get.programmatic_adrequest)
             .pipe(take(1))
             .subscribe({
-                next: () => this.getPlaylistData(true),
+                next: () => this.getProgrammaticAds(),
             });
     }
 }
