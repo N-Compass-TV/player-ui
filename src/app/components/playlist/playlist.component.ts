@@ -218,16 +218,40 @@ export class PlaylistComponent implements OnInit {
             if (this._helper.canPlayContent(this.playlist[this.currentSequence])) {
                 this.currentPlaylistContent = this.playlist[this.currentSequence];
                 this.onDisplayModeChecked.emit(this.currentPlaylistContent.is_fullscreen);
+
+                /** Trigger programmatic ad screenshot */
+                if (this.isMainzone && this.playlist[this.currentSequence].programmatic_source) {
+                    setTimeout(() => {
+                        this.triggerProgrammaticPlaying(this.playlist[this.currentSequence]);
+                    }, 5000);
+                }
+
                 return;
             }
 
             this.currentSequence = this.currentSequence + 1;
         } while (this.currentSequence < this.playlist.length);
 
-        // Reset sequence, trigger programmatic and reset play
+        /**
+         * Reset sequence, trigger programmatic and reset play
+         * @Todo - It should not only check mainZone flag but
+         * also if the programmatic is enabled for this license
+         */
+
         this.currentSequence = 0;
         if (this.isMainzone) this.triggerProgrammaticAdRequest();
         this.playAd();
+    }
+
+    /**
+     * Trigger programmatic playing request,
+     * This sends a screenshot as a proof of play
+     */
+    private triggerProgrammaticPlaying(playlistContent: LPlaylistData): void {
+        this._request
+            .getRequest(`${API_ENDPOINTS.local.get.programmatic_playing}/${playlistContent.proof_of_play}`)
+            .pipe(take(1))
+            .subscribe();
     }
 
     /**
@@ -239,9 +263,7 @@ export class PlaylistComponent implements OnInit {
             .getRequest(API_ENDPOINTS.local.get.programmatic_adrequest)
             .pipe(take(1))
             .subscribe({
-                next: () => {
-                    this.getPlaylistData(true);
-                },
+                next: () => this.getPlaylistData(true),
             });
     }
 }

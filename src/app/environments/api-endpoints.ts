@@ -25,6 +25,7 @@ export const API_ENDPOINTS = {
             programmatic_ads: 'programmatic/ads',
             programmatic_adrequest: 'programmatic/request-ads',
             programmatic_played: 'programmatic/played',
+            programmatic_playing: 'programmatic/playing',
             refetch: 'content/refetch',
             reset: 'content/reset',
             schedule: 'player/schedule',
