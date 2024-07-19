@@ -209,7 +209,7 @@ export class PlaylistComponent implements OnInit {
      */
     public onDisplayEnded(): void {
         this.currentSequence += 1;
-        if (!this.playlist[this.currentSequence].programmatic_source) this.currentVendorSequence += 1;
+        if (!this.currentPlaylistContent?.programmatic_source) this.currentVendorSequence += 1;
         this.currentPlaylistContent = null;
 
         setTimeout(() => {
@@ -230,15 +230,27 @@ export class PlaylistComponent implements OnInit {
             return;
         }
 
-        console.log(this.currentVendorSequence, this.currentSequence);
+        if (
+            this.currentVendorSequence - 1 !== 0 &&
+            (this.currentVendorSequence - 1) % this.vendorAdPlayPosition === 0
+        ) {
+            if (this.vendorAds.length) {
+                const vendorAd = this.vendorAds[0];
+                this.currentPlaylistContent = vendorAd;
+                this.onDisplayModeChecked.emit(vendorAd.is_fullscreen);
+                this.currentSequence = this.currentSequence - 1;
+                this.currentVendorSequence = 1;
 
-        if ((this.currentVendorSequence - 1) % this.vendorAdPlayPosition === 0 && this.vendorAds.length) {
-            const vendorAd = this.vendorAds[0];
-            this.currentPlaylistContent = vendorAd;
-            this.onDisplayModeChecked.emit(vendorAd.is_fullscreen);
+                /** Send programmatic screenshot */
+                setTimeout(() => {
+                    this.triggerProgrammaticPlaying(vendorAd);
+                }, 5000);
+
+                return;
+            }
+
+            /** Retry adrequest */
             this.triggerProgrammaticAdRequest();
-            this.currentSequence = this.currentSequence - 1;
-            return;
         }
 
         do {
@@ -257,9 +269,6 @@ export class PlaylistComponent implements OnInit {
 
                 return;
             }
-
-            this.currentSequence += 1;
-            if (!this.playlist[this.currentSequence].programmatic_source) this.currentVendorSequence += 1;
         } while (this.currentSequence < this.playlist.length);
 
         /**
@@ -269,7 +278,6 @@ export class PlaylistComponent implements OnInit {
          */
 
         this.currentSequence = 0;
-        if (this.isMainzone) this.triggerProgrammaticAdRequest();
         this.playAd();
     }
 
@@ -281,7 +289,11 @@ export class PlaylistComponent implements OnInit {
         this._request
             .getRequest(`${API_ENDPOINTS.local.get.programmatic_playing}/${playlistContent.proof_of_play}`)
             .pipe(take(1))
-            .subscribe();
+            .subscribe({
+                next: () => {
+                    this.triggerProgrammaticAdRequest();
+                },
+            });
     }
 
     /**
