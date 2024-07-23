@@ -156,6 +156,17 @@ export class AppComponent implements OnInit {
             console.log('Business hours operation schedule sent from player server:', data);
             this._socket.onScheduleCheck(data);
         });
+
+        /**
+         * Listens to the playlist component which throws the
+         * playlist content id of the currently playing asset
+         */
+        this._socket.currentPlayingContent$.subscribe({
+            next: (playlistContentId: string) => {
+                console.log({ playlistContentId });
+                this.socketClient.emit(PLAYER_SERVER_SOCKET_EVENTS.currently_playing, playlistContentId);
+            },
+        });
     }
 
     /**

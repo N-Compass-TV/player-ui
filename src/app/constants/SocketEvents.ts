@@ -3,6 +3,7 @@ export const PLAYER_SERVER_SOCKET_EVENTS = {
     activated: 'activated',
     connect: 'connect',
     contentUpdate: 'content_update',
+    currently_playing: 'currently_playing',
     disconnect: 'disconnect',
     fileDownloaded: 'file_downloaded',
     refetch: 'refetch_content',

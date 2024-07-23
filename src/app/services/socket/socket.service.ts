@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Subject } from 'rxjs/internal/Subject';
 
 @Injectable({
@@ -27,6 +28,13 @@ export class SocketService {
     private schedule = new Subject<any>();
 
     /**
+     * Currently playing content
+     * @type {Subject<any>}
+     * @private
+     */
+    private currentPlayingContent = new Subject<any>();
+
+    /**
      * Observable to subscribe to downloaded assets notifications.
      * @type {Observable<any>}
      */
@@ -43,6 +51,12 @@ export class SocketService {
      * @type {Observable<any>}
      */
     schedule$ = this.schedule.asObservable();
+
+    /**
+     * Observable to subscribe to playlist content events
+     * @type {Observable<string>}
+     */
+    currentPlayingContent$ = this.currentPlayingContent.asObservable();
 
     constructor() {}
 
@@ -65,7 +79,21 @@ export class SocketService {
         this.emit.next({ event, data });
     }
 
+    /**
+     * Schedule checker, indicates close or open business hours
+     * @param {scheduleData} event - The socket event
+     * @returns {void}
+     */
     public onScheduleCheck(scheduleData: any): void {
         this.schedule.next(scheduleData);
+    }
+
+    /**
+     * Currently playing ad watcher
+     * @param {playlistContentId} string
+     * @returns {void}
+     */
+    public onPlayingContent(playlistContentId: string): void {
+        this.currentPlayingContent.next(playlistContentId);
     }
 }

@@ -6,8 +6,9 @@ import { catchError, map, of, switchMap, take } from 'rxjs';
 import { ContentComponent } from '@components/content';
 
 /** Services */
-import { RequestService } from '@services/request';
 import { HelperService } from '@services/helper';
+import { RequestService } from '@services/request';
+import { SocketService } from '@services/socket';
 
 /** Environments */
 import { API_ENDPOINTS } from '@environments';
@@ -107,6 +108,7 @@ export class PlaylistComponent implements OnInit {
     constructor(
         private _helper: HelperService,
         private _request: RequestService,
+        private _socket: SocketService,
     ) {}
 
     ngOnInit(): void {
@@ -266,6 +268,10 @@ export class PlaylistComponent implements OnInit {
                     setTimeout(() => {
                         this.triggerProgrammaticPlaying(this.playlist[this.currentSequence]);
                     }, 5000);
+                }
+
+                if (this.currentPlaylistContent?.playlist_content_id) {
+                    this._socket.onPlayingContent(this.currentPlaylistContent.playlist_content_id);
                 }
 
                 return;
