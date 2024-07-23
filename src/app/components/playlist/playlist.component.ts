@@ -111,7 +111,7 @@ export class PlaylistComponent implements OnInit {
 
     ngOnInit(): void {
         this.getPlaylistData();
-        this.getProgrammaticAds();
+        if (this.isMainzone) this.getProgrammaticAds();
     }
 
     /**
@@ -176,7 +176,7 @@ export class PlaylistComponent implements OnInit {
                     })),
                 ];
 
-                if (this.playlist.length < this.vendorAdPlayPosition) {
+                if (this.playlist.length < this.vendorAdPlayPosition && this.isMainzone) {
                     this.playlist = [...this.playlist, ...this.vendorAds];
                 }
             },
@@ -231,6 +231,7 @@ export class PlaylistComponent implements OnInit {
         }
 
         if (
+            this.isMainzone &&
             this.currentVendorSequence - 1 !== 0 &&
             (this.currentVendorSequence - 1) % this.vendorAdPlayPosition === 0
         ) {
