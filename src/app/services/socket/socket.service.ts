@@ -93,7 +93,7 @@ export class SocketService {
      * @param {playlistContentId} string
      * @returns {void}
      */
-    public onPlayingContent(playlistContentId: string): void {
-        this.currentPlayingContent.next(playlistContentId);
+    public onPlayingContent(data: { playlistContentId: string; programmatic: boolean }): void {
+        this.currentPlayingContent.next(data);
     }
 }

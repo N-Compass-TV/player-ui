@@ -83,7 +83,6 @@ export class AppComponent implements OnInit {
          * Re-routes the app to the content-setup page to retry the player data download.
          */
         this.socketClient.on(PLAYER_SERVER_SOCKET_EVENTS.activated, () => {
-            console.log('Player license has been activated! Retrying setup');
             this.redirectToContentSetup();
         });
 
@@ -127,7 +126,6 @@ export class AppComponent implements OnInit {
          * Re-routes the app to the content-setup page to retry the player data download.
          */
         this.socketClient.on(PLAYER_SERVER_SOCKET_EVENTS.activated, () => {
-            console.log('Player license has been activated! Retrying setup');
             this.redirectToContentSetup();
         });
 
@@ -136,7 +134,6 @@ export class AppComponent implements OnInit {
          * Redirects to the /content-setup page which triggers the Refetch API
          */
         this.socketClient.on(PLAYER_SERVER_SOCKET_EVENTS.refetch, () => {
-            console.log('Refetch signal received! Initiating refetch sequence');
             this.redirectToContentSetup(true);
         });
 
@@ -153,7 +150,6 @@ export class AppComponent implements OnInit {
          * Displays ads if schedule is open and a black screen if close
          */
         this.socketClient.on(PLAYER_SERVER_SOCKET_EVENTS.schedule_check, (data: LPlayerSchedule) => {
-            console.log('Business hours operation schedule sent from player server:', data);
             this._socket.onScheduleCheck(data);
         });
 
@@ -162,9 +158,9 @@ export class AppComponent implements OnInit {
          * playlist content id of the currently playing asset
          */
         this._socket.currentPlayingContent$.subscribe({
-            next: (playlistContentId: string) => {
-                console.log({ playlistContentId });
-                this.socketClient.emit(PLAYER_SERVER_SOCKET_EVENTS.currently_playing, playlistContentId);
+            next: (data: { playlistContentId: string; programmatic: boolean }) => {
+                console.log({ data });
+                this.socketClient.emit(PLAYER_SERVER_SOCKET_EVENTS.currently_playing, data);
             },
         });
     }

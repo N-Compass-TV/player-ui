@@ -249,6 +249,12 @@ export class PlaylistComponent implements OnInit {
                     this.triggerProgrammaticPlaying(vendorAd);
                 }, 5000);
 
+                /** Trigger currently playing signal */
+                this._socket.onPlayingContent({
+                    playlistContentId: this.currentPlaylistContent.playlist_content_id,
+                    programmatic: this.currentPlaylistContent.programmatic_source,
+                });
+
                 return;
             }
 
@@ -270,9 +276,11 @@ export class PlaylistComponent implements OnInit {
                     }, 5000);
                 }
 
-                if (this.currentPlaylistContent?.playlist_content_id) {
-                    this._socket.onPlayingContent(this.currentPlaylistContent.playlist_content_id);
-                }
+                /** Trigger currently playing signal */
+                this._socket.onPlayingContent({
+                    playlistContentId: this.currentPlaylistContent.playlist_content_id,
+                    programmatic: this.currentPlaylistContent.programmatic_source,
+                });
 
                 return;
             }
