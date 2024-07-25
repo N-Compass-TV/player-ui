@@ -17,7 +17,7 @@ export class RequestService {
      */
     public getRequest(endpoint: string, overwriteBase = false): Observable<any> {
         const url = !overwriteBase ? `${this.baseApiUrl}${endpoint}` : endpoint;
-        return this._http.get(url).pipe(timeout(50000), retry(2));
+        return this._http.get(url).pipe(timeout(360000), retry(2));
     }
 
     /**
@@ -28,7 +28,7 @@ export class RequestService {
      */
     public postRequest(endpoint: string, body: any): Observable<any> {
         const url = `${this.baseApiUrl}${endpoint}`;
-        return this._http.post(url, body).pipe(timeout(50000));
+        return this._http.post(url, body).pipe(timeout(360000));
     }
 
     /**
@@ -39,7 +39,7 @@ export class RequestService {
      */
     public putRequest(endpoint: string, body: any): Observable<any> {
         const url = `${this.baseApiUrl}${endpoint}`;
-        return this._http.put(url, body).pipe(timeout(20000));
+        return this._http.put(url, body).pipe(timeout(360000));
     }
 
     /**
@@ -50,7 +50,7 @@ export class RequestService {
      */
     public deleteRequest(endpoint: string, id: any): Observable<any> {
         const url = `${this.baseApiUrl}${endpoint}/${id}`;
-        return this._http.delete(url).pipe(timeout(20000));
+        return this._http.delete(url).pipe(timeout(360000));
     }
 
     /**

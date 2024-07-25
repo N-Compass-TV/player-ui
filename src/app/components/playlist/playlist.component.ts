@@ -284,6 +284,8 @@ export class PlaylistComponent implements OnInit {
 
                 return;
             }
+
+            this.currentSequence += 1;
         } while (this.currentSequence < this.playlist.length);
 
         /**
