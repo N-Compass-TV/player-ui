@@ -159,7 +159,6 @@ export class AppComponent implements OnInit {
          */
         this._socket.currentPlayingContent$.subscribe({
             next: (data: { playlistContentId: string; programmatic: boolean }) => {
-                console.log({ data });
                 this.socketClient.emit(PLAYER_SERVER_SOCKET_EVENTS.currently_playing, data);
             },
         });
