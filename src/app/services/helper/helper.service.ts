@@ -27,38 +27,36 @@ export class HelperService {
          *  1 - Default, 2 - Do Not Play, 3 - Custom Scheduled
          */
 
-        if (!playlistContent) {
-            return false;
-        }
+        if (!playlistContent) return false;
 
         const { play_type, play_time_start, play_time_end, date_from, date_to, play_days } = playlistContent;
 
-        if (parseInt(play_type) === PLAY_TYPE.do_not_play) {
-            return false;
-        }
+        if (parseInt(play_type) === PLAY_TYPE.do_not_play) return false;
 
-        if (parseInt(play_type) === PLAY_TYPE.default) {
-            return true;
-        }
+        if (parseInt(play_type) === PLAY_TYPE.default) return true;
 
         if (parseInt(play_type) === PLAY_TYPE.custom_scheduled) {
             const now = new Date();
-            const currentDayId = now.getDay(); // Current day of the week
-            const nowTime = now.getHours() * 60 + now.getMinutes(); // Current time in minutes since start of the day
+            const currentDayId = now.getDay();
+            const nowTime = now.getHours() * 60 + now.getMinutes();
 
             const startDate = new Date(date_from);
             const endDate = new Date(date_to);
 
-            // Check if start and end times are provided and parse them
+            // Function to strip the time part of the date
+            const stripTime = (date: Date): Date => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+            const nowDate = stripTime(now);
+            const strippedStartDate = stripTime(startDate);
+            const strippedEndDate = stripTime(endDate);
+
+            // Parse start and end times if provided, otherwise set to -1
             const startTime = play_time_start ? this.parseTime(play_time_start) : -1;
             const endTime = play_time_end ? this.parseTime(play_time_end) : -1;
 
-            // Check if current date is within the scheduled date range
-            if (now >= startDate && now <= endDate) {
-                // Check if the current day is within the play days
+            if (nowDate >= strippedStartDate && nowDate <= strippedEndDate) {
                 const playDays = play_days.split(',').map(Number);
                 if (playDays.includes(currentDayId)) {
-                    // Check if current time is within the scheduled time range
                     if (startTime !== -1 && endTime !== -1 && nowTime >= startTime && nowTime <= endTime) {
                         return true;
                     }

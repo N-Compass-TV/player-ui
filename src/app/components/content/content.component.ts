@@ -115,15 +115,11 @@ export class ContentComponent implements OnInit {
         // Return if playlist content is null or if ticker is not activated (no contents)
         if (!this.playlistContent || !this.activateTicker) return;
 
+        // Ticker for livestream is handled in the playlist component
+        if (this.isLiveStream) return;
+
         setTimeout(
-            () => {
-                // Restart startTicker() if content is a livestream and is within scheduled time
-                if (this.isLiveStream && this.isWithinSchedule) {
-                    this.startTicker();
-                    return;
-                }
-                this.contentEnded();
-            },
+            () => this.contentEnded(),
             this.playlistContent.duration ? this.playlistContent.duration * 1000 : 20000,
         );
     }
@@ -153,14 +149,5 @@ export class ContentComponent implements OnInit {
 
         const url = `${API_ENDPOINTS.local.get.log}/${id}`;
         this._request.getRequest(url).pipe(take(1)).subscribe();
-    }
-
-    /**
-     * Check if content is supposed to play now
-     * @returns {boolean} Returns true if the content should play now, else false.
-     * @private
-     */
-    private get isWithinSchedule(): boolean {
-        return this._helper.canPlayContent(this.playlistContent);
     }
 }

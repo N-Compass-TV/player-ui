@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { catchError, map, of, switchMap, take } from 'rxjs';
+import { take } from 'rxjs';
 
 /** Components */
 import { ContentComponent } from '@components/content';
@@ -59,6 +59,13 @@ export class PlaylistComponent implements OnInit {
     public currentPlaylistContent: LPlaylistData | null = null;
 
     /**
+     * The current livestream ad.
+     * @type {PlaylistData | null}
+     * @default null
+     */
+    public currentLivestreamAd: LPlaylistData | null = null;
+
+    /**
      * The current playlist sequence
      * @type {number}
      * @default 0
@@ -71,6 +78,13 @@ export class PlaylistComponent implements OnInit {
      * @default 1
      */
     public currentVendorSequence: number = 1;
+
+    /**
+     * Array of playlist items that are classified as livestream
+     * @type {LPlaylistData[]}
+     * @default []
+     */
+    private livestreamAd: LPlaylistData[] = [];
 
     /**
      * Array of playlist items.
@@ -133,14 +147,69 @@ export class PlaylistComponent implements OnInit {
                 // Concatenate the sorted playlist with the mapped ads
                 this.playlist = [...sortedPlaylist];
 
-                // Play ads
-                this.tickerActivated = this.playlist.length > 1;
+                // Store Livestreams
+                this.livestreamAd = [
+                    ...sortedPlaylist.filter((p: LPlaylistData) => p.classification === 'live_stream'),
+                ];
+
+                // Run livestream ticker
+                if (this.livestreamAd) this.livestreamTicker();
+
+                // Flag to check if updating, else just play normally
                 if (!update) this.playAd();
             },
             error: (error) => {
                 console.error({ error });
             },
         });
+    }
+
+    private livestreamTicker() {
+        // 1. Set timeout ticket
+        // 2. Ticker will check every 5 seconds if the schedule of the livestream is within schedule
+        // 3. Livestream will display on top of currently playing ad by setting the value of currentPlaylistContent
+        // 4. Ticker will still run to check if its out of schedule then it will normally play the rest of the ads
+        if (!this.livestreamAd.length) return;
+
+        setTimeout(() => {
+            const livestreamAd = this.livestreamAd.find((ad) => this._helper.canPlayContent(ad));
+
+            /** No livestream ad available to play */
+            if (!livestreamAd) {
+                /**
+                 * No livestream ad available to play, but if the current playlist content
+                 * playing is a livestream, then we need to stop it
+                 */
+                if (this.currentPlaylistContent && this.currentPlaylistContent.classification === 'live_stream') {
+                    /** Reset the current playlist content value */
+                    this.currentPlaylistContent = null;
+
+                    /** Totally remove the livestream */
+                    this.livestreamAd = this.livestreamAd.filter(
+                        (ad) => ad.playlist_content_id !== this.currentLivestreamAd?.playlist_content_id,
+                    );
+
+                    /** Play ads normally */
+                    setTimeout(() => {
+                        this.playAd();
+                    }, 0);
+                }
+
+                this.livestreamTicker();
+                return;
+            }
+
+            /** If current playlist content is playing a normal ad, switch it to livestream ad if its time to play */
+            if (this.currentPlaylistContent?.classification !== 'live_stream') this.currentPlaylistContent = null;
+
+            /** Set the currently playing content's value to livestream */
+            setTimeout(() => {
+                this.currentPlaylistContent = livestreamAd;
+                this.currentLivestreamAd = livestreamAd;
+            }, 0);
+
+            this.livestreamTicker();
+        }, 5000);
     }
 
     private getProgrammaticAds() {
