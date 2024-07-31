@@ -12,6 +12,15 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(req).pipe(
             catchError((error: HttpErrorResponse | any) => {
+                // Check if the request has the custom header
+                if (req.headers.has('Exclude-Interceptor')) {
+                    const clonedRequest = req.clone({
+                        headers: req.headers.delete('Exclude-Interceptor'),
+                    });
+
+                    return next.handle(clonedRequest);
+                }
+
                 // Check for custom error object with triggerEmail flag
                 if (error.triggerEmail) {
                     this.sendErrorNotification(error.message);

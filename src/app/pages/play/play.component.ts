@@ -37,7 +37,7 @@ export class PlayComponent implements OnInit {
      * @type {boolean}
      * @default true
      */
-    businessOperating: boolean = true;
+    businessOperating = true;
 
     /**
      * Holds the license and hardware properties of the player
@@ -50,6 +50,11 @@ export class PlayComponent implements OnInit {
     programmaticAds!: LProgrammaticAd[];
 
     /**
+     * Programmatic flag
+     */
+    programmaticEnabled = false;
+
+    /**
      * Holds the player screen and zone properties
      * @default []
      */
@@ -60,7 +65,7 @@ export class PlayComponent implements OnInit {
      * @type {boolean}
      * @default false
      */
-    isFullscreen: boolean = false;
+    isFullscreen = false;
 
     /**
      * Subject to manage unsubscription.
@@ -80,6 +85,10 @@ export class PlayComponent implements OnInit {
         this._activatedRoute.queryParamMap.pipe(takeUntil(this._unsubscribe)).subscribe((data: any) => {
             if (data.params.operationHours) {
                 this.businessOperating = data.params.operationHours === 'true';
+            }
+
+            if (data.params.programmatic) {
+                this.programmaticEnabled = data.params.programmatic === 'true';
             }
         });
 

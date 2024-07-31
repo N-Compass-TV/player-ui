@@ -62,7 +62,6 @@ export class ContentComponent implements OnInit {
      * @param {Injector} injector - The Angular injector.
      */
     constructor(
-        private _helper: HelperService,
         private _request: RequestService,
         private injector: Injector,
     ) {}

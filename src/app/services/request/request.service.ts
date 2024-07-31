@@ -15,9 +15,9 @@ export class RequestService {
      * @param {boolean} [overwriteBase=false] - Whether to overwrite the base URL.
      * @returns {Observable<any>} An observable of the response.
      */
-    public getRequest(endpoint: string, overwriteBase = false): Observable<any> {
+    public getRequest(endpoint: string, options = {}, overwriteBase = false): Observable<any> {
         const url = !overwriteBase ? `${this.baseApiUrl}${endpoint}` : endpoint;
-        return this._http.get(url).pipe(timeout(360000), retry(2));
+        return this._http.get(url, options).pipe(timeout(360000));
     }
 
     /**

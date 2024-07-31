@@ -45,6 +45,13 @@ export class PlaylistComponent implements OnInit {
     @Input() programmaticAds: LProgrammaticAd[] = [];
 
     /**
+     * Programmatic enabled flag
+     * @type {boolean}
+     * @default true
+     */
+    @Input() programmaticEnabled: boolean = true;
+
+    /**
      * Emits the playlist content is_fullscreen value
      * @type {number}
      * @default ''
@@ -213,6 +220,8 @@ export class PlaylistComponent implements OnInit {
     }
 
     private getProgrammaticAds() {
+        if (!this.programmaticEnabled) return;
+
         this._request.getRequest(API_ENDPOINTS.local.get.programmatic_ads).subscribe({
             next: (ads: LProgrammaticAdsResponse) => {
                 this.vendorAds = [
@@ -268,6 +277,7 @@ export class PlaylistComponent implements OnInit {
         this.currentPlaylistContent = null;
 
         setTimeout(() => {
+            this.saveCurrentPlaylistSequence(this.currentSequence);
             this.playAd();
         }, 0);
     }
@@ -284,6 +294,7 @@ export class PlaylistComponent implements OnInit {
         this.currentPlaylistContent = null;
 
         setTimeout(() => {
+            this.saveCurrentPlaylistSequence(this.currentSequence);
             this.playAd();
         }, 0);
     }
@@ -296,6 +307,12 @@ export class PlaylistComponent implements OnInit {
      * @returns {void}
      */
     private playAd(): void {
+        const savedPlaylistSequence = localStorage.getItem(this.playlistId);
+
+        if (savedPlaylistSequence) {
+            this.currentSequence = parseInt(savedPlaylistSequence);
+        }
+
         if (this.playlist.length === 0) {
             console.warn('Playlist is empty!');
             return;
@@ -328,7 +345,7 @@ export class PlaylistComponent implements OnInit {
             }
 
             /** Retry adrequest */
-            this.triggerProgrammaticAdRequest();
+            if (this.programmaticEnabled) this.triggerProgrammaticAdRequest();
         }
 
         do {
@@ -355,16 +372,28 @@ export class PlaylistComponent implements OnInit {
             }
 
             this.currentSequence += 1;
+            this.saveCurrentPlaylistSequence(this.currentSequence);
         } while (this.currentSequence < this.playlist.length);
 
-        /**
-         * Reset sequence, trigger programmatic and reset play
-         * @Todo - It should not only check mainZone flag but
-         * also if the programmatic is enabled for this license
-         */
-
         this.currentSequence = 0;
+        this.saveCurrentPlaylistSequence(this.currentSequence);
+
+        if (this.isMainzone) {
+            window.location.reload();
+            return;
+        }
+
         this.playAd();
+    }
+
+    /**
+     * Saves the current playlist sequence that will
+     * allow the player to look up in an event of a page reload
+     * making sure the sequence continues
+     * @param currentPlaylistSequence
+     */
+    private saveCurrentPlaylistSequence(currentPlaylistSequence: number) {
+        localStorage.setItem(this.playlistId, currentPlaylistSequence.toString());
     }
 
     /**
@@ -377,7 +406,7 @@ export class PlaylistComponent implements OnInit {
             .pipe(take(1))
             .subscribe({
                 next: () => {
-                    this.triggerProgrammaticAdRequest();
+                    if (this.programmaticEnabled) this.triggerProgrammaticAdRequest();
                 },
             });
     }
@@ -392,6 +421,9 @@ export class PlaylistComponent implements OnInit {
             .pipe(take(1))
             .subscribe({
                 next: () => this.getProgrammaticAds(),
+                error: () => {
+                    this.programmaticEnabled = false;
+                },
             });
     }
 }

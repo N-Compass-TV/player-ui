@@ -91,7 +91,7 @@ export class HealthCheckComponent implements OnInit {
         let checkUpdateResponse: any[] = [];
 
         this._request
-            .getRequest(API_ENDPOINTS.nctv.ping, true)
+            .getRequest(API_ENDPOINTS.nctv.ping, {}, true)
             .pipe(
                 // Database Health Check
                 switchMap(() => {

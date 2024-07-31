@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { catchError, of, Subject, switchMap, takeUntil, tap } from 'rxjs';
 
 /** Components */
 import { AnimatedLoaderComponent } from '@components/animated-loader';
@@ -74,6 +75,12 @@ export class ContentSetupComponent implements OnInit {
      * @default []
      */
     public playerAssets: Content[] = [];
+
+    /**
+     * Programmatic flag
+     * @default true
+     */
+    private programmaticEnabled = true;
 
     /**
      * The width of the progress indicator.
@@ -245,7 +252,20 @@ export class ContentSetupComponent implements OnInit {
                     this.subtitle = titleSubtitle.subtitle;
                     this.readyToDownload = true;
                 }),
-                switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.programmatic_adrequest)),
+                switchMap(() => {
+                    const headers = new HttpHeaders().set('Exclude-Interceptor', 'true');
+                    return this._request.getRequest(API_ENDPOINTS.local.get.programmatic_adrequest, { headers }).pipe(
+                        catchError((error) => {
+                            console.error('Programmatic ad request failed:', error);
+
+                            // Setting programmaticDisabled to true in case of error
+                            this.programmaticEnabled = false;
+
+                            // Return an empty observable to continue the chain
+                            return of(null);
+                        }),
+                    );
+                }),
 
                 /** Get Host Schedule */
                 tap(() => {
@@ -265,7 +285,12 @@ export class ContentSetupComponent implements OnInit {
                     this.downloadCompleted = true;
 
                     setTimeout(() => {
-                        this._router.navigate(['play'], { queryParams: { operationHours: data.operation_status } });
+                        this._router.navigate(['play'], {
+                            queryParams: {
+                                operationHours: data.operation_status,
+                                programmatic: this.programmaticEnabled,
+                            },
+                        });
                     }, 5000);
                 },
                 error: (error: LError) => {
