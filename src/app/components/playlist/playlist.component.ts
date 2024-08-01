@@ -49,7 +49,7 @@ export class PlaylistComponent implements OnInit {
      * @type {boolean}
      * @default true
      */
-    @Input() programmaticEnabled: boolean = true;
+    @Input() programmaticEnabled: boolean = false;
 
     /**
      * Emits the playlist content is_fullscreen value

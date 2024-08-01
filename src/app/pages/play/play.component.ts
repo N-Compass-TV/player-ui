@@ -96,29 +96,16 @@ export class PlayComponent implements OnInit {
     }
 
     /**
-     * Initializes playlist data by making API requests to retrieve player license, properties, and screen zones.
+     * Initializes playlist data by making API requests to retrieve player screen zones.
      * @returns {void}
      */
     private initializePlaylistData(): void {
         this._request
-            .getRequest(API_ENDPOINTS.local.get.license)
+            .getRequest(API_ENDPOINTS.local.get.template)
             .pipe(
-                tap((data: LPlayerProperties) => {
-                    this.playerLicenseAndProperties = data;
-                }),
-
-                /** Get player template */
-                switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.template)),
                 tap((data: LPlayerZone[]) => {
                     this.screenZones = data;
                 }),
-
-                /** Get programmatic ads */
-                switchMap(() => this._request.getRequest(API_ENDPOINTS.local.get.programmatic_ads)),
-                tap((data: LProgrammaticAdsResponse) => {
-                    this.programmaticAds = data.data;
-                }),
-
                 /** Custom error catcher  */
                 catchError((error) => {
                     console.error('Error initializing playlist data:', error);

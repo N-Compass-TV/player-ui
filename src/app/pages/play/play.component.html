@@ -4,7 +4,8 @@
             <app-playlist
                 [playlistId]="zone.playlist_id"
                 [isMainzone]="zone.zone_order === 1 || screenZones.length === 1"
-                (onDisplayModeChecked)="setDisplayMode($event, zone.zone_order)"></app-playlist>
+                (onDisplayModeChecked)="setDisplayMode($event, zone.zone_order)"
+                [programmaticEnabled]="programmaticEnabled"></app-playlist>
         </app-zone>
     </ng-container>
 

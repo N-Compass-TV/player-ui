@@ -255,10 +255,15 @@ export class ContentSetupComponent implements OnInit {
                 switchMap(() => {
                     const headers = new HttpHeaders().set('Exclude-Interceptor', 'true');
                     return this._request.getRequest(API_ENDPOINTS.local.get.programmatic_adrequest, { headers }).pipe(
+                        tap((response: { data: { programmatic: boolean } }) => {
+                            if (response.data && response.data.programmatic !== undefined) {
+                                this.programmaticEnabled = response.data.programmatic;
+                            }
+                        }),
                         catchError((error) => {
                             console.error('Programmatic ad request failed:', error);
 
-                            // Setting programmaticDisabled to true in case of error
+                            // Setting programmaticDisabled to false in case of error
                             this.programmaticEnabled = false;
 
                             // Return an empty observable to continue the chain
