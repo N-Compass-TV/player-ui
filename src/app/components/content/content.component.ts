@@ -53,28 +53,38 @@ export class ContentComponent implements OnInit {
      */
     @Output() contentRenderErrored: EventEmitter<LPlaylistData> = new EventEmitter();
 
+    /**
+     * Indicates if the content is a feed.
+     * @type {boolean}
+     */
     private isFeed: boolean = false;
+
+    /**
+     * Indicates if the content is a live stream.
+     * @type {boolean}
+     */
     private isLiveStream: boolean = false;
 
     /**
-     * Constructor for the component.
-     * Initializes the FeedPipe and ImagePipe using the Angular injector.
-     * @param {Injector} injector - The Angular injector.
+     * Flag to track if contentEnded has been triggered.
+     * @type {boolean}
      */
+    private contentEndedFlag: boolean = false;
+
+    /**
+     * Variable to hold the timeout ID.
+     * @type {any}
+     */
+    private timeoutId: any;
+
     constructor(
         private _request: RequestService,
         private injector: Injector,
     ) {}
 
-    /**
-     * Angular lifecycle hook that is called after the component's view has been initialized.
-     * Starts the ticker to track the display duration.
-     * @returns {void}
-     */
     ngOnInit(): void {
         // Retrieve the FeedPipe instance from the injector
         const feedPipe = this.injector.get(FeedPipe);
-        const videoPipe = this.injector.get(VideoPipe);
         const { file_type, classification } = this.playlistContent;
 
         // Determine if the content is a feed and if it is a live stream
@@ -86,10 +96,8 @@ export class ContentComponent implements OnInit {
             this.playlistContent.duration = 100;
         }
 
-        // Run ticker only if the playlist content is NOT a video
-        if (!videoPipe.transform(this.playlistContent.file_type)) {
-            this.startTicker();
-        }
+        // Run display ticker
+        this.startTicker();
 
         if (!this.isFeed) {
             this.playlistContent.url = `${API_ENDPOINTS.local.assets}/${this.playlistContent.file_name}`;
@@ -111,16 +119,47 @@ export class ContentComponent implements OnInit {
      * @returns {void}
      */
     private startTicker(): void {
+        const videoPipe = this.injector.get(VideoPipe);
+
         // Return if playlist content is null or if ticker is not activated (no contents)
         if (!this.playlistContent || !this.activateTicker) return;
 
         // Ticker for livestream is handled in the playlist component
         if (this.isLiveStream) return;
 
-        setTimeout(
-            () => this.contentEnded(),
-            this.playlistContent.duration ? this.playlistContent.duration * 1000 : 20000,
-        );
+        /**
+         * This is a safety measure for videos that might get stuck.
+         * The ticker runs for 1.5 times the duration of the asset, assuming it might still be loading.
+         * If the ticker reaches its end, it indicates the asset is stuck and showing a black screen.
+         * In this case, the page is reloaded to refresh browser resources.
+         */
+        if (this.playlistContent.duration && videoPipe.transform(this.playlistContent.file_type)) {
+            this.timeoutId = setTimeout(
+                () => {
+                    // Check if contentEnded has been triggered
+                    if (!this.contentEndedFlag) {
+                        // Reload the page instead of ending the content
+                        window.location.reload();
+                    }
+                },
+                this.playlistContent.duration ? this.playlistContent.duration * 1500 : 30000, // Increased by 500 millisecond to give the asset a chance to play
+            );
+
+            return;
+        }
+
+        // Ticker for non video dealer assets
+        if (!videoPipe.transform(this.playlistContent.file_type)) {
+            this.timeoutId = setTimeout(
+                () => {
+                    if (!this.contentEndedFlag) {
+                        // Check if contentEnded has been triggered
+                        this.contentEnded();
+                    }
+                },
+                this.playlistContent.duration ? this.playlistContent.duration * 1000 : 20000,
+            );
+        }
     }
 
     /**
@@ -129,6 +168,14 @@ export class ContentComponent implements OnInit {
      * @returns {void}
      */
     public contentEnded(): void {
+        if (this.contentEndedFlag) return;
+        this.contentEndedFlag = true;
+
+        if (this.timeoutId) {
+            clearTimeout(this.timeoutId);
+            this.timeoutId = null;
+        }
+
         this.hitPlayCount(this.playlistContent.playlist_content_id || this.playlistContent.proof_of_play);
         this.displayEnded.emit(this.playlistContent);
     }
