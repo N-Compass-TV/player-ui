@@ -116,7 +116,7 @@ export class AppComponent implements OnInit {
          * Sends a ping request to the API and navigates to the content setup page with the license key.
          */
         this.socketClient.on(PLAYER_SERVER_SOCKET_EVENTS.contentUpdate, () => {
-            this._request.getRequest(API_ENDPOINTS.nctv.ping, true).subscribe({
+            this._request.getRequest(API_ENDPOINTS.nctv.ping, {}, true).subscribe({
                 next: () => this.redirectToContentSetup(),
             });
         });

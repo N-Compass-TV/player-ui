@@ -83,13 +83,15 @@ export class PlayComponent implements OnInit {
 
     ngOnInit(): void {
         this._activatedRoute.queryParamMap.pipe(takeUntil(this._unsubscribe)).subscribe((data: any) => {
-            if (data.params.operationHours) {
-                this.businessOperating = data.params.operationHours === 'true';
-            }
+            this.businessOperating = data.params.operationHours
+                ? data.params.operationHours === 'true'
+                : !!parseInt(localStorage.getItem('businessOperating') || '0');
 
-            if (data.params.programmatic) {
-                this.programmaticEnabled = data.params.programmatic === 'true';
-            }
+            this.programmaticEnabled = data.params.programmatic
+                ? data.params.programmatic === 'true'
+                : !!parseInt(localStorage.getItem('programmaticEnabled') || '0');
+
+            console.log(`Programmatic: ${this.programmaticEnabled} | Operation Hours: ${this.businessOperating}`);
         });
 
         this.initializePlaylistData();
@@ -131,6 +133,7 @@ export class PlayComponent implements OnInit {
         this._socket.schedule$.subscribe({
             next: (data: LPlayerSchedule) => {
                 this.businessOperating = data.operation_status;
+                localStorage.setItem('businessOperating', this.businessOperating ? '1' : '0');
             },
         });
     }

@@ -76,7 +76,7 @@ export class SoftwareUpdateComponent implements OnInit {
      */
     private downloadAvailableUpdates(): void {
         this._request
-            .getRequest(API_ENDPOINTS.nctv.ping, true)
+            .getRequest(API_ENDPOINTS.nctv.ping, {}, true)
             .pipe(
                 // Download update files
                 switchMap(() => {

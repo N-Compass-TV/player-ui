@@ -273,7 +273,8 @@ export class PlaylistComponent implements OnInit {
      */
     public onContentRenderError(e: any): void {
         this.currentSequence += 1;
-        if (!this.playlist[this.currentSequence].programmatic_source) this.currentVendorSequence += 1;
+        if (this.playlist[this.currentSequence] && !this.playlist[this.currentSequence].programmatic_source)
+            this.currentVendorSequence += 1;
         this.currentPlaylistContent = null;
 
         setTimeout(() => {
@@ -379,7 +380,9 @@ export class PlaylistComponent implements OnInit {
         this.saveCurrentPlaylistSequence(this.currentSequence);
 
         if (this.isMainzone) {
-            window.location.reload();
+            const params = window.location.search; // Get the query parameters
+            const url = window.location.pathname + params; // Construct the full URL
+            window.location.replace(url); // Reload the page with the full URL
             return;
         }
 

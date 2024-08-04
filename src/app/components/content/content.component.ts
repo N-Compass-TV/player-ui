@@ -133,13 +133,12 @@ export class ContentComponent implements OnInit {
          * If the ticker reaches its end, it indicates the asset is stuck and showing a black screen.
          * In this case, the page is reloaded to refresh browser resources.
          */
-        if (this.playlistContent.duration && videoPipe.transform(this.playlistContent.file_type)) {
+        if (this.playlistContent.programmatic_source && videoPipe.transform(this.playlistContent.file_type)) {
             this.timeoutId = setTimeout(
                 () => {
                     // Check if contentEnded has been triggered
                     if (!this.contentEndedFlag) {
-                        // Reload the page instead of ending the content
-                        window.location.reload();
+                        this.contentEnded();
                     }
                 },
                 this.playlistContent.duration ? this.playlistContent.duration * 1500 : 30000, // Increased by 500 millisecond to give the asset a chance to play

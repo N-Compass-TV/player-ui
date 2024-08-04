@@ -258,6 +258,7 @@ export class ContentSetupComponent implements OnInit {
                         tap((response: { data: { programmatic: boolean } }) => {
                             if (response.data && response.data.programmatic !== undefined) {
                                 this.programmaticEnabled = response.data.programmatic;
+                                localStorage.setItem('programmaticEnabled', this.programmaticEnabled ? '1' : '0');
                             }
                         }),
                         catchError((error) => {
@@ -288,6 +289,10 @@ export class ContentSetupComponent implements OnInit {
                     this.title = data.operation_status ? 'Host is Open' : 'Host is Closed';
                     this.subtitle = `${data.opening_hour} - ${data.closing_hour}`;
                     this.downloadCompleted = true;
+
+                    // Set localstorage values
+                    localStorage.setItem('programmaticEnabled', this.programmaticEnabled ? '1' : '0');
+                    localStorage.setItem('businessOperating', data.operation_status ? '1' : '0');
 
                     setTimeout(() => {
                         this._router.navigate(['play'], {
