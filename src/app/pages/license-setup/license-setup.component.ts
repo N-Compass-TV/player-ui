@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
 
 /** Components */
@@ -17,6 +17,7 @@ import { DeviceInfo, LicenseRegistrationResponse } from '@interfaces/cloud';
 import { API_ENDPOINTS } from '@environments';
 import { CommonModule } from '@angular/common';
 import { tap } from 'rxjs/internal/operators/tap';
+import { Subject, takeUntil } from 'rxjs';
 @Component({
     selector: 'app-license-setup',
     standalone: true,
@@ -29,6 +30,11 @@ export class LicenseSetupComponent implements OnInit {
      * Information about the device
      */
     public deviceInfo!: DeviceInfo;
+
+    /**
+     * Assigned license key
+     */
+    public licenseKey!: string;
 
     /**
      * Constants used in the form
@@ -47,14 +53,27 @@ export class LicenseSetupComponent implements OnInit {
      */
     public registrationSuccess: boolean = false;
 
-    ngOnInit() {
-        this.getDeviceInfo();
-    }
+    /**
+     * Subject to manage unsubscription.
+     * @default new Subject<void>()
+     * @protected
+     */
+    protected _unsubscribe = new Subject<void>();
 
     constructor(
+        private _activatedRoute: ActivatedRoute,
         private _request: RequestService,
         private _router: Router,
     ) {}
+
+    ngOnInit() {
+        this.getDeviceInfo();
+
+        /** Get License Key if available in URL */
+        this._activatedRoute.queryParamMap.pipe(takeUntil(this._unsubscribe)).subscribe((data: any) => {
+            this.licenseKey = data.params.licenseKey;
+        });
+    }
 
     /**
      * Retrieves device information and updates the deviceInfo property.
@@ -77,6 +96,8 @@ export class LicenseSetupComponent implements OnInit {
                     serverVersion: deviceInfo.server_version,
                     uiVersion: deviceInfo.ui_version,
                 };
+
+                if (this.licenseKey) this.registerLicenseKey(this.licenseKey);
             },
         });
     }

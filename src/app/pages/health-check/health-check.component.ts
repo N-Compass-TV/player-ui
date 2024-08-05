@@ -135,7 +135,7 @@ export class HealthCheckComponent implements OnInit {
 
                     let subtitleIndex = 6;
                     let subtitleMessageIndex = 6;
-                    let navigateToRoute = 'content-setup';
+                    let navigateToRoute = 'license-setup';
 
                     if (checkUpdateResponse.length) {
                         subtitleIndex = 7;

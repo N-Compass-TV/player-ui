@@ -8,7 +8,9 @@
         </div>
 
         <app-license-form
+            [savedLicenseKey]="licenseKey"
             [registeringLicense]="registeringLicense"
-            (onFormSubmit)="registerLicenseKey($event)"></app-license-form>
+            (onFormSubmit)="registerLicenseKey($event)">
+        </app-license-form>
     </div>
 </div>

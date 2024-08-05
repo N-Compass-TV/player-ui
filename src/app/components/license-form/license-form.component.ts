@@ -26,6 +26,13 @@ export class LicenseFormComponent {
     @Input() registeringLicense: boolean = false;
 
     /**
+     * Saved License Key
+     * @type {string}
+     * @default false
+     */
+    @Input() savedLicenseKey!: string;
+
+    /**
      * Event emitter to notify parent component when the form is submitted
      */
     @Output() onFormSubmit: EventEmitter<string> = new EventEmitter();
@@ -48,7 +55,7 @@ export class LicenseFormComponent {
 
     ngOnInit() {
         this.licenseKeyForm = new FormGroup({
-            licenseKey: new FormControl('', [Validators.required, this.uuidValidator()]),
+            licenseKey: new FormControl(this.savedLicenseKey || '', [Validators.required, this.uuidValidator()]),
         });
     }
 
