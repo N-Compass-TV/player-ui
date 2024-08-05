@@ -32,44 +32,44 @@ export class ContentComponent implements OnInit {
      * The playlist content to be displayed.
      * @type {LPlaylistData}
      */
-    @Input() playlistContent!: LPlaylistData;
+    @Input() public playlistContent!: LPlaylistData;
 
     /**
      * Sets the display ticker to on or off
      * @type {boolean}
      * @default true
      */
-    @Input() activateTicker: boolean = true;
+    @Input() public activateTicker = true;
 
     /**
      * Event emitter that emits when the display ends.
      * @type {EventEmitter<LPlaylistData>}
      */
-    @Output() displayEnded: EventEmitter<LPlaylistData> = new EventEmitter();
+    @Output() public displayEnded: EventEmitter<LPlaylistData> = new EventEmitter();
 
     /**
      * Event emitter that emits a boolean value when there is an error rendering the content.
      * @type {EventEmitter<boolean>}
      */
-    @Output() contentRenderErrored: EventEmitter<LPlaylistData> = new EventEmitter();
+    @Output() public contentRenderErrored: EventEmitter<LPlaylistData> = new EventEmitter();
 
     /**
      * Indicates if the content is a feed.
-     * @type {boolean}
+     * @default false
      */
-    private isFeed: boolean = false;
+    private isFeed = false;
 
     /**
      * Indicates if the content is a live stream.
-     * @type {boolean}
+     * @default false
      */
-    private isLiveStream: boolean = false;
+    private isLiveStream = false;
 
     /**
      * Flag to track if contentEnded has been triggered.
-     * @type {boolean}
+     * @default false
      */
-    private contentEndedFlag: boolean = false;
+    private contentEndedFlag = false;
 
     /**
      * Variable to hold the timeout ID.

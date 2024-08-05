@@ -129,7 +129,7 @@ export class PlayComponent implements OnInit {
      * Initializes socket observable for player schedule
      * @returns {void}
      */
-    private initiatePlayerScheduleChecker() {
+    private initiatePlayerScheduleChecker(): void {
         this._socket.schedule$.subscribe({
             next: (data: LPlayerSchedule) => {
                 this.businessOperating = data.operation_status;

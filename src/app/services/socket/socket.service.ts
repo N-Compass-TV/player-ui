@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 import { Subject } from 'rxjs/internal/Subject';
 
 @Injectable({
@@ -38,27 +37,25 @@ export class SocketService {
      * Observable to subscribe to downloaded assets notifications.
      * @type {Observable<any>}
      */
-    downloaded$ = this.downloaded.asObservable();
+    public downloaded$ = this.downloaded.asObservable();
 
     /**
      * Observable to subscribe to socket emissions
      * @type {Observable<any>}
      */
-    emit$ = this.downloaded.asObservable();
+    public emit$ = this.downloaded.asObservable();
 
     /**
      * Observable to subscribe to player schedule events
      * @type {Observable<any>}
      */
-    schedule$ = this.schedule.asObservable();
+    public schedule$ = this.schedule.asObservable();
 
     /**
      * Observable to subscribe to playlist content events
      * @type {Observable<string>}
      */
-    currentPlayingContent$ = this.currentPlayingContent.asObservable();
-
-    constructor() {}
+    public currentPlayingContent$ = this.currentPlayingContent.asObservable();
 
     /**
      * Notifies that an asset has been downloaded by emitting the provided data through the downloaded subject.

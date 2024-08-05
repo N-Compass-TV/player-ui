@@ -11,6 +11,10 @@ import { PlayerDetails } from '@interfaces/misc';
     styleUrl: './player-details.component.scss',
 })
 export class PlayerDetailsComponent implements OnInit {
+    /**
+     * Stores the player details including license key, dealer name, host name, and screen name.
+     * @type {PlayerDetails}
+     */
     playerDetails: PlayerDetails = {
         licenseKey: 'Not available',
         dealerName: 'Not Available',
@@ -22,13 +26,14 @@ export class PlayerDetailsComponent implements OnInit {
         this.getPlayerData();
     }
 
-    getPlayerData() {
+    /**
+     * Get player data to be displayed to the frontend
+     */
+    private getPlayerData(): void {
         const licenseData: LLicenseSettings | null = JSON.parse(localStorage.getItem('licenseData')!) || null;
         const playerData: PlayerData | null = JSON.parse(localStorage.getItem('playerData')!) || null;
 
-        if (!playerData || !licenseData) {
-            return;
-        }
+        if (!playerData || !licenseData) return;
 
         this.playerDetails = {
             licenseKey: licenseData.license_key,

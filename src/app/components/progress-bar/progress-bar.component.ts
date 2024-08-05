@@ -12,23 +12,20 @@ import { Subject } from 'rxjs';
 export class ProgressBarComponent {
     /**
      * Information to be displayed on the progress bar.
-     * @type {string}
      * @default ''
      */
-    @Input() progressBarInfo: string = '';
+    @Input() progressBarInfo = '';
 
     /**
      *
      * Reference for the progress tracking.
-     * @type {string}
      * @default ''
      */
-    @Input() progressReference: string = '';
+    @Input() progressReference = '';
 
     /**
      * The width of the progress bar.
-     * @type {number}
      * @default 0
      */
-    @Input() progressWidth: number = 0;
+    @Input() progressWidth = 0;
 }

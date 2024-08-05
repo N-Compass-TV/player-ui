@@ -12,21 +12,21 @@ import { Subject, takeUntil } from 'rxjs';
 export class ScreensaverComponent implements OnInit, OnDestroy {
     /**
      * The current AM/PM part of the time.
-     * @type {string}
+     * @default ''
      */
-    amPm!: string;
+    public amPm = '';
 
     /**
      * The current time displayed by the clock.
-     * @type {string}
+     * @default ''
      */
-    currentTime!: string;
+    public currentTime = '';
 
     /**
      * The message to be displayed
-     * @type {string}
+     * @default ''
      */
-    message: string = 'Your license may be inactive, please contact your administrator';
+    public message = 'Your license may be inactive, please contact your administrator';
 
     /**
      * The timer ID used to update the time every second.

@@ -20,6 +20,12 @@ import { LLicenseSettings, LPlayerSchedule } from '@interfaces/local';
 })
 export class AppComponent implements OnInit {
     /**
+     * Client for the socket connection.
+     * @type {boolean}
+     */
+    public playerDetailsToggle = false;
+
+    /**
      * URL where your server is running.
      * @type {string}
      * @private
@@ -32,12 +38,6 @@ export class AppComponent implements OnInit {
      * @private
      */
     private socketClient!: SocketIOClient.Socket;
-
-    /**
-     * Client for the socket connection.
-     * @type {boolean}
-     */
-    playerDetailsToggle: boolean = false;
 
     constructor(
         private _request: RequestService,
@@ -148,6 +148,7 @@ export class AppComponent implements OnInit {
         /**
          * Event listener for business schedule
          * Displays ads if schedule is open and a black screen if close
+         * @param {LPlayerSchedule} data - The data related to the player's schedule.
          */
         this.socketClient.on(PLAYER_SERVER_SOCKET_EVENTS.schedule_check, (data: LPlayerSchedule) => {
             this._socket.onScheduleCheck(data);

@@ -28,35 +28,35 @@ export class PlaylistComponent implements OnInit {
     /**
      * Indicates that the zone holding this playlist is a main zone
      */
-    @Input() isMainzone: boolean = false;
+    @Input() public isMainzone = false;
 
     /**
      * Playlist ID to be used to fetch playlist data.
      * @type {string}
      * @default ''
      */
-    @Input() playlistId: string = '';
+    @Input() public playlistId = '';
 
     /**
      * Programmatic ads to be diplayed
      * @type {LProgrammaticAds[]}
      * @default []
      */
-    @Input() programmaticAds: LProgrammaticAd[] = [];
+    @Input() public programmaticAds: LProgrammaticAd[] = [];
 
     /**
      * Programmatic enabled flag
      * @type {boolean}
      * @default true
      */
-    @Input() programmaticEnabled: boolean = false;
+    @Input() public programmaticEnabled = false;
 
     /**
      * Emits the playlist content is_fullscreen value
      * @type {number}
      * @default ''
      */
-    @Output() onDisplayModeChecked: EventEmitter<number> = new EventEmitter();
+    @Output() public onDisplayModeChecked: EventEmitter<number> = new EventEmitter();
 
     /**
      * The current playlist content item.
@@ -77,14 +77,14 @@ export class PlaylistComponent implements OnInit {
      * @type {number}
      * @default 0
      */
-    public currentSequence: number = 0;
+    public currentSequence = 0;
 
     /**
      * The current vendor content sequence tracker but starts with 1
      * @type {number}
      * @default 1
      */
-    public currentVendorSequence: number = 1;
+    public currentVendorSequence = 1;
 
     /**
      * Array of playlist items that are classified as livestream
@@ -105,7 +105,7 @@ export class PlaylistComponent implements OnInit {
      * @type {boolean}
      * @default true
      */
-    public tickerActivated: boolean = true;
+    public tickerActivated = true;
 
     /**
      * Array of vendor ads mapped into playlist data.
@@ -171,11 +171,13 @@ export class PlaylistComponent implements OnInit {
         });
     }
 
-    private livestreamTicker() {
-        // 1. Set timeout ticket
-        // 2. Ticker will check every 5 seconds if the schedule of the livestream is within schedule
-        // 3. Livestream will display on top of currently playing ad by setting the value of currentPlaylistContent
-        // 4. Ticker will still run to check if its out of schedule then it will normally play the rest of the ads
+    /**
+     * Checks and manages the display of livestream ads at regular intervals.
+     *
+     * @private
+     * @returns {void}
+     */
+    private livestreamTicker(): void {
         if (!this.livestreamAd.length) return;
 
         setTimeout(() => {
@@ -219,7 +221,13 @@ export class PlaylistComponent implements OnInit {
         }, 5000);
     }
 
-    private getProgrammaticAds() {
+    /**
+     * Fetches and processes programmatic ads if enabled.
+     *
+     * @private
+     * @returns {void}
+     */
+    private getProgrammaticAds(): void {
         if (!this.programmaticEnabled) return;
 
         this._request.getRequest(API_ENDPOINTS.local.get.programmatic_ads).subscribe({
@@ -395,7 +403,7 @@ export class PlaylistComponent implements OnInit {
      * making sure the sequence continues
      * @param currentPlaylistSequence
      */
-    private saveCurrentPlaylistSequence(currentPlaylistSequence: number) {
+    private saveCurrentPlaylistSequence(currentPlaylistSequence: number): void {
         localStorage.setItem(this.playlistId, currentPlaylistSequence.toString());
     }
 

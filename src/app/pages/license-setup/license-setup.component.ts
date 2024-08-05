@@ -66,7 +66,7 @@ export class LicenseSetupComponent implements OnInit {
         private _router: Router,
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.getDeviceInfo();
 
         /** Get License Key if available in URL */
@@ -80,7 +80,7 @@ export class LicenseSetupComponent implements OnInit {
      * Makes a GET request to the device_info endpoint.
      * Updates the deviceInfo object with the received data.
      */
-    private getDeviceInfo() {
+    private getDeviceInfo(): void {
         this._request.getRequest(API_ENDPOINTS.local.get.device_info).subscribe({
             next: (deviceInfo: LDeviceInfo) => {
                 this.deviceInfo = {

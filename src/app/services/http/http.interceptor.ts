@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpErrorResponse } from '@angular/common/http';
-import { Observable, lastValueFrom, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { SERVER_ERROR_CODE } from '@constants';
@@ -52,7 +52,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
 
     private sendErrorNotification(message: string): void {
         /** Handle Email Sending Here
-         * @todo - API endpoint for email sending
+         * @todo - API endpoint for email sending, next version
          * @description - this triggers a direct call to the .Net servers in case the player server itself failed
          * recipient should only be the TechSupport emai
          */

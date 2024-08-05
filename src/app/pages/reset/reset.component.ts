@@ -23,7 +23,7 @@ export class ResetComponent implements OnInit {
 
     private resetPlayer(): void {
         this._request.getRequest(API_ENDPOINTS.local.get.reset).subscribe({
-            next: (response) => {
+            next: () => {
                 this._router.navigate(['/license-setup']);
             },
         });

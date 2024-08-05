@@ -9,6 +9,7 @@ import {
     ValidatorFn,
     Validators,
 } from '@angular/forms';
+import { FORM_CONSTANTS } from '@constants';
 
 @Component({
     selector: 'app-license-form',
@@ -20,40 +21,33 @@ import {
 export class LicenseFormComponent {
     /**
      * Indicates whether the license is currently being registered
-     * @type {boolean}
      * @default false
      */
-    @Input() registeringLicense: boolean = false;
+    @Input() public registeringLicense = false;
 
     /**
      * Saved License Key
-     * @type {string}
-     * @default false
+     * @default ''
      */
-    @Input() savedLicenseKey!: string;
+    @Input() public savedLicenseKey = '';
 
     /**
      * Event emitter to notify parent component when the form is submitted
      */
-    @Output() onFormSubmit: EventEmitter<string> = new EventEmitter();
+    @Output() public onFormSubmit: EventEmitter<string> = new EventEmitter();
 
     /**
      * Form group for the license key input
      * @type {FormGroup}
      */
-    licenseKeyForm!: FormGroup;
+    public licenseKeyForm!: FormGroup;
 
     /**
      * Constants used in the form
      */
-    formConstants: any = {
-        buttonText: 'Enter',
-        licenseError: 'License key is required',
-        invalidUUIDError: 'Invalid UUID format',
-        placeholder: 'e.g., 123e4567-e89b-12d3-a456-426614174000',
-    };
+    public formConstants = FORM_CONSTANTS;
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.licenseKeyForm = new FormGroup({
             licenseKey: new FormControl(this.savedLicenseKey || '', [Validators.required, this.uuidValidator()]),
         });

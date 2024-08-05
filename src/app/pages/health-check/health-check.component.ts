@@ -30,37 +30,37 @@ export class HealthCheckComponent implements OnInit {
      * The current progress value.
      * @default 0
      */
-    currentProgress = 0;
+    public currentProgress = 0;
 
     /**
      * The width of the progress indicator.
      * @default 0
      */
-    progressWidth = 0;
+    public progressWidth = 0;
 
     /**
      * The total width of the progress indicator.
      * @default 50
      */
-    progressWidthTotal = 50;
+    public progressWidthTotal = 50;
 
     /**
      * The number of steps in the process.
      * @default 6
      */
-    stepCount = 6;
+    public stepCount = 6;
 
     /**
      * The subtitle displayed during the process.
      * @default 'Please Wait . . .'
      */
-    subtitle = 'Please Wait . . .';
+    public subtitle = 'Please Wait . . .';
 
     /**
      * The title displayed during the process.
      * @default 'Player Startup Check'
      */
-    title = 'Player Startup Check';
+    public title = 'Player Startup Check';
 
     /**
      * The progress steps description for display
